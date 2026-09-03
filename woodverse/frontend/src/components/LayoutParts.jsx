@@ -2,10 +2,18 @@ import { MessageSquare } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
 import { navigate } from "../utils";
 
-export function SectionHeading({ title, subtitle, action }) {
+export function SectionHeading({ title, subtitle, action, align = "start" }) {
+  const centered = align === "center";
+
   return (
-    <div className="mb-6 flex min-w-0 items-end justify-between gap-6 max-sm:flex-col max-sm:items-start">
-      <div className="min-w-0">
+    <div
+      className={`mb-6 flex min-w-0 gap-6 ${
+        centered
+          ? "flex-col items-center text-center"
+          : "items-end justify-between max-sm:flex-col max-sm:items-start"
+      }`}
+    >
+      <div className={centered ? "" : "min-w-0"}>
         <h2 className="break-words text-lg font-semibold leading-snug text-slate-700 dark:text-stone-100">{title}</h2>
         {subtitle && <p className="break-words leading-snug text-slate-500 dark:text-stone-400">{subtitle}</p>}
       </div>
