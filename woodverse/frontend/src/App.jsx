@@ -3,38 +3,38 @@ import { Header } from "./components/Header";
 import { ChatLauncher } from "./components/LayoutParts";
 import { products as fallbackProducts } from "./data/catalog";
 import { apiRequest, navigate } from "./utils";
-import {
-  CatalogPage,
-  CartPage,
-  CategoryPage,
-  ChatbotPage,
-  DeliveryPage,
-  ForgotPasswordPage,
-  HomePage,
-  LoginPage,
-  PaymentPage,
-  ProductDetailsPage,
-  ProfilePage,
-  SellerPage,
-} from "./pages/customer/index";
+import { CatalogPage, CategoryPage, ProductDetailsPage } from "./pages/services/catalog";
+import { CartPage, DeliveryPage, PaymentPage } from "./pages/services/order";
+import { ChatbotPage } from "./pages/services/ai";
+import { ForgotPasswordPage, LoginPage, ProfilePage } from "./pages/services/auth";
+import { HomePage, SellerPage } from "./pages/services/home";
 
 const lazyPage = (loader, exportName) => lazy(() => loader().then((module) => ({ default: module[exportName] })));
 
-const AdminDashboardPage = lazyPage(() => import("./pages/admin/index"), "AdminDashboardPage");
-const SupplierProfilePage = lazyPage(() => import("./pages/supplier/index"), "SupplierProfilePage");
-const VendorCustomerOrdersPage = lazyPage(() => import("./pages/vendor/index"), "VendorCustomerOrdersPage");
-const VendorDashboardPage = lazyPage(() => import("./pages/vendor/index"), "VendorDashboardPage");
-const VendorHelpCenterPage = lazyPage(() => import("./pages/vendor/index"), "VendorHelpCenterPage");
-const VendorInventoryPage = lazyPage(() => import("./pages/vendor/index"), "VendorInventoryPage");
-const VendorProductionTrackingPage = lazyPage(() => import("./pages/vendor/index"), "VendorProductionTrackingPage");
-const VendorProductsPage = lazyPage(() => import("./pages/vendor/index"), "VendorProductsPage");
-const VendorProfilePage = lazyPage(() => import("./pages/vendor/index"), "VendorProfilePage");
-const VendorPurchaseOrdersPage = lazyPage(() => import("./pages/vendor/index"), "VendorPurchaseOrdersPage");
-const VendorQuotationsPage = lazyPage(() => import("./pages/vendor/index"), "VendorQuotationsPage");
-const VendorSettingsPage = lazyPage(() => import("./pages/vendor/index"), "VendorSettingsPage");
-const VendorShipmentsPage = lazyPage(() => import("./pages/vendor/index"), "VendorShipmentsPage");
-const VendorSuppliersPage = lazyPage(() => import("./pages/vendor/index"), "VendorSuppliersPage");
-const VendorWarehousesPage = lazyPage(() => import("./pages/vendor/index"), "VendorWarehousesPage");
+const AdminDashboardPage = lazyPage(() => import("./pages/services/admin"), "AdminDashboardPage");
+const SupplierProfilePage = lazyPage(() => import("./pages/services/supplier-profile"), "SupplierProfilePage");
+const SupplierDashboardPage = lazyPage(() => import("./pages/services/supplier-portal"), "SupplierDashboardPage");
+const SupplierPurchaseOrderPage = lazyPage(() => import("./pages/services/procurement"), "SupplierPurchaseOrderPage");
+const SupplierMaterialsPage = lazyPage(() => import("./pages/services/inventory"), "SupplierMaterialsPage");
+const SupplierShipmentsPage = lazyPage(() => import("./pages/services/logistics"), "SupplierShipmentsPage");
+const SupplierNewShipmentPage = lazyPage(() => import("./pages/services/logistics"), "SupplierNewShipmentPage");
+const SupplierVendorsPage = lazyPage(() => import("./pages/services/vendor-network"), "SupplierVendorsPage");
+const SupplierNotificationsPage = lazyPage(() => import("./pages/services/notifications"), "SupplierNotificationsPage");
+const SupplierSupportPage = lazyPage(() => import("./pages/services/support"), "SupplierSupportPage");
+const SupplierSettingsPage = lazyPage(() => import("./pages/services/settings"), "SupplierSettingsPage");
+const VendorCustomerOrdersPage = lazyPage(() => import("./pages/services/vendor"), "VendorCustomerOrdersPage");
+const VendorDashboardPage = lazyPage(() => import("./pages/services/vendor"), "VendorDashboardPage");
+const VendorHelpCenterPage = lazyPage(() => import("./pages/services/vendor"), "VendorHelpCenterPage");
+const VendorInventoryPage = lazyPage(() => import("./pages/services/vendor"), "VendorInventoryPage");
+const VendorProductionTrackingPage = lazyPage(() => import("./pages/services/vendor"), "VendorProductionTrackingPage");
+const VendorProductsPage = lazyPage(() => import("./pages/services/vendor"), "VendorProductsPage");
+const VendorProfilePage = lazyPage(() => import("./pages/services/vendor"), "VendorProfilePage");
+const VendorPurchaseOrdersPage = lazyPage(() => import("./pages/services/vendor"), "VendorPurchaseOrdersPage");
+const VendorQuotationsPage = lazyPage(() => import("./pages/services/vendor"), "VendorQuotationsPage");
+const VendorSettingsPage = lazyPage(() => import("./pages/services/vendor"), "VendorSettingsPage");
+const VendorShipmentsPage = lazyPage(() => import("./pages/services/vendor"), "VendorShipmentsPage");
+const VendorSuppliersPage = lazyPage(() => import("./pages/services/vendor"), "VendorSuppliersPage");
+const VendorWarehousesPage = lazyPage(() => import("./pages/services/vendor"), "VendorWarehousesPage");
 
 const routeMap = {
   "/": "home",
@@ -59,7 +59,16 @@ const routeMap = {
   "/vendor/profile": "vendorProfile",
   "/vendor/settings": "vendorSettings",
   "/vendor/help": "vendorHelp",
+  "/supplier": "supplierDashboard",
+  "/supplier/purchase-orders/po-8921": "supplierPurchaseOrder",
+  "/supplier/materials": "supplierMaterials",
+  "/supplier/shipments": "supplierShipments",
+  "/supplier/shipments/new": "supplierNewShipment",
+  "/supplier/vendors": "supplierVendors",
+  "/supplier/notifications": "supplierNotifications",
   "/supplier/profile": "supplierProfile",
+  "/supplier/support": "supplierSupport",
+  "/supplier/settings": "supplierSettings",
   "/login": "login",
   "/forgot-password": "forgotPassword",
   "/profile": "profile",
@@ -67,7 +76,7 @@ const routeMap = {
   "/admin-dashboard": "adminDashboard",
 };
 
-const standalonePages = new Set(["vendorDashboard", "vendorProducts", "vendorCustomerOrders", "vendorQuotations", "vendorProduction", "vendorSuppliers", "vendorPurchaseOrders", "vendorInventory", "vendorWarehouses", "vendorShipments", "vendorProfile", "vendorSettings", "vendorHelp", "supplierProfile", "adminDashboard"]);
+const standalonePages = new Set(["vendorDashboard", "vendorProducts", "vendorCustomerOrders", "vendorQuotations", "vendorProduction", "vendorSuppliers", "vendorPurchaseOrders", "vendorInventory", "vendorWarehouses", "vendorShipments", "vendorProfile", "vendorSettings", "vendorHelp", "supplierDashboard", "supplierPurchaseOrder", "supplierMaterials", "supplierShipments", "supplierNewShipment", "supplierVendors", "supplierNotifications", "supplierProfile", "supplierSupport", "supplierSettings", "adminDashboard"]);
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname.replace(/\/$/, "") || "/");
@@ -173,6 +182,15 @@ export default function App() {
         {page === "vendorSettings" && <VendorSettingsPage />}
         {page === "vendorHelp" && <VendorHelpCenterPage />}
         {page === "supplierProfile" && <SupplierProfilePage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierDashboard" && <SupplierDashboardPage />}
+          {page === "supplierPurchaseOrder" && <SupplierPurchaseOrderPage />}
+          {page === "supplierMaterials" && <SupplierMaterialsPage />}
+          {page === "supplierShipments" && <SupplierShipmentsPage />}
+          {page === "supplierNewShipment" && <SupplierNewShipmentPage />}
+          {page === "supplierVendors" && <SupplierVendorsPage />}
+          {page === "supplierNotifications" && <SupplierNotificationsPage />}
+          {page === "supplierSupport" && <SupplierSupportPage />}
+          {page === "supplierSettings" && <SupplierSettingsPage theme={theme} onToggleTheme={toggleTheme} />}
         {page === "adminDashboard" && <AdminDashboardPage />}
         {page === "profile" && <ProfilePage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
         {page === "login" && <LoginPage onAuthSuccess={handleAuthSuccess} />}
