@@ -33,7 +33,7 @@ import {
   resolvePage,
   standalonePages,
 } from "./config/routes";
-import { apiRequest, getSession, navigate, signOut } from "./utils";
+import { apiRequest, getSession, navigate, signOut, storeAuth } from "./utils";
 import {
   CatalogPage,
   CartPage,
@@ -60,10 +60,14 @@ export default function App() {
       return path === "/" ? "dark" : "light";
     }
   });
-  const [cart, setCart] = useState([
-    { ...fallbackProducts[0], quantity: 1 },
-    { ...fallbackProducts[1], quantity: 1 },
-  ]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem("woodverse-cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   // The session is re-read on every relevant change, so the UI cannot be logged in
   // without a token the server would also accept.
   const [session, setSession] = useState(() => getSession());
@@ -114,6 +118,30 @@ export default function App() {
       localStorage.setItem("woodverse-theme", theme);
     } catch {}
   }, [theme]);
+
+  // Persist cart to localStorage whenever it changes.
+  useEffect(() => {
+    try {
+      localStorage.setItem("woodverse-cart", JSON.stringify(cart));
+    } catch {}
+  }, [cart]);
+
+  // Restore session from the HttpOnly cookie on first mount by calling /api/auth/me.
+  // The cookie is sent automatically via credentials:'include' in apiRequest.
+  useEffect(() => {
+    apiRequest("/api/auth/me")
+      .then(({ user }) => {
+        if (user) {
+          storeAuth({ user });
+          setSession(getSession());
+        }
+      })
+      .catch(() => {
+        // 401 is handled inside apiRequest (clearAuth + woodverse:unauthorized event).
+        // Do not clear auth on network errors so offline users keep their session.
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAuthSuccess = () => {
     setSession(getSession());

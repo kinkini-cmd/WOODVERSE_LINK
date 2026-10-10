@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { databaseConfigured, query } from "../db.js";
 import bcrypt from "bcryptjs";
-import { signToken } from "../utils/auth.js";
+import { signToken, signRefreshToken, verifyRefreshToken } from "../utils/auth.js";
+import { authenticateToken } from "../middleware/auth.js";
 import { devAccounts, devPassword } from "../data/memory.js";
 
 export const authRouter = Router();
@@ -30,6 +31,15 @@ function accountBlocked(user) {
   return null;
 }
 
+// Cookie names and options used across all auth endpoints.
+const COOKIE_OPTS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+};
+const ACCESS_COOKIE = "woodverse_token";
+const REFRESH_COOKIE = "woodverse_refresh";
+
 authRouter.post("/api/auth/register", async (request, response) => {
   if (!databaseConfigured) {
     return response.status(503).json({
@@ -37,7 +47,7 @@ authRouter.post("/api/auth/register", async (request, response) => {
     });
   }
 
-  const { email, fullName, password, role = "customer", businessName } = request.body;
+  const { email, fullName, password, role = "customer", businessName, documents = [] } = request.body;
 
   const normalizedEmail = String(email || "").trim().toLowerCase();
   const normalizedName = String(fullName || "").trim();
@@ -92,10 +102,11 @@ authRouter.post("/api/auth/register", async (request, response) => {
     const user = result.rows[0];
 
     if (shouldCreateVendorProfile) {
+      // TODO: replace with a real file-upload endpoint; documents here are filename strings only
       await query(
-        `INSERT INTO vendors (user_id, business_name, verification_status)
-         VALUES ($1, $2, 'pending')`,
-        [user.id, String(businessName || `${normalizedName}'s business`).slice(0, 200)]
+        `INSERT INTO vendors (user_id, business_name, documents, verification_status)
+         VALUES ($1, $2, $3, 'pending')`,
+        [user.id, String(businessName || `${normalizedName}'s business`).slice(0, 200), JSON.stringify(Array.isArray(documents) ? documents : [])]
       );
     }
 
@@ -105,6 +116,10 @@ authRouter.post("/api/auth/register", async (request, response) => {
       role: user.role,
       fullName: user.full_name,
     });
+    const refreshToken = signRefreshToken(user.id);
+
+    response.cookie(ACCESS_COOKIE, token, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    response.cookie(REFRESH_COOKIE, refreshToken, { ...COOKIE_OPTS, maxAge: 24 * 60 * 60 * 1000 });
 
     return response.status(201).json({
       token,
@@ -135,7 +150,7 @@ authRouter.post("/api/auth/login", async (request, response) => {
   if (!databaseConfigured && !devAccountsEnabled) {
     return response.status(503).json({ error: "PostgreSQL is not configured." });
   }
-  const { email, password } = request.body;
+  const { email, password, rememberMe } = request.body;
   if (!email || !password) return response.status(400).json({ error: "Email and password are required." });
 
   try {
@@ -154,7 +169,14 @@ authRouter.post("/api/auth/login", async (request, response) => {
     if (blocked) {
       return response.status(403).json({ error: blocked });
     }
+
     const token = signToken({ id: user.id, email: user.email, role: user.role, fullName: user.full_name });
+    const remember = Boolean(rememberMe);
+    const refreshToken = signRefreshToken(user.id, remember);
+
+    response.cookie(ACCESS_COOKIE, token, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    response.cookie(REFRESH_COOKIE, refreshToken, { ...COOKIE_OPTS, maxAge: remember ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 });
+
     response.json({
       token,
       user: { id: user.id, email: user.email, fullName: user.full_name, role: user.role, status: user.status },
@@ -163,5 +185,88 @@ authRouter.post("/api/auth/login", async (request, response) => {
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: "Internal server error" });
+  }
+});
+
+authRouter.post("/api/auth/refresh", (request, response) => {
+  const refreshToken = request.cookies?.[REFRESH_COOKIE];
+  if (!refreshToken) return response.status(401).json({ error: "No refresh token." });
+
+  const decoded = verifyRefreshToken(refreshToken);
+  if (!decoded) {
+    response.clearCookie(ACCESS_COOKIE);
+    response.clearCookie(REFRESH_COOKIE);
+    return response.status(401).json({ error: "Refresh token invalid or expired." });
+  }
+
+  const newToken = signToken({ id: decoded.id });
+  response.cookie(ACCESS_COOKIE, newToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+  response.json({ ok: true });
+});
+
+authRouter.post("/api/auth/logout", (request, response) => {
+  response.clearCookie(ACCESS_COOKIE, COOKIE_OPTS);
+  response.clearCookie(REFRESH_COOKIE, COOKIE_OPTS);
+  response.json({ ok: true });
+});
+
+authRouter.get("/api/auth/me", authenticateToken, async (request, response) => {
+  if (!databaseConfigured) {
+    return response.json({
+      user: {
+        id: request.user.id,
+        email: request.user.email,
+        role: request.user.role,
+        fullName: request.user.fullName,
+      },
+    });
+  }
+  try {
+    const result = await query(
+      "SELECT id, email, full_name, role, status FROM users WHERE id = $1",
+      [request.user.id]
+    );
+    const user = result.rows[0];
+    if (!user) {
+      response.clearCookie(ACCESS_COOKIE, COOKIE_OPTS);
+      response.clearCookie(REFRESH_COOKIE, COOKIE_OPTS);
+      return response.status(401).json({ error: "User not found." });
+    }
+    if (user.status === "suspended") return response.status(403).json({ error: "Account is suspended." });
+    return response.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        fullName: user.full_name,
+        role: user.role,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Internal server error" });
+  }
+});
+
+authRouter.post("/api/auth/forgot-password", async (request, response) => {
+  if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
+  const { email } = request.body;
+  if (!email) return response.status(400).json({ error: "Email is required." });
+  try {
+    const result = await query(
+      "SELECT id, email FROM users WHERE email = $1",
+      [String(email).trim().toLowerCase()]
+    );
+    const user = result.rows[0];
+    if (user) {
+      const resetToken = signToken({ id: user.id, purpose: "password_reset" });
+      // TODO: send email with reset link; for now, log the token server-side
+      console.log("[forgot-password] Reset token for", user.email, ":", resetToken);
+    }
+    // Always return the same message to prevent email enumeration
+    return response.json({ message: "If that email exists, a reset link has been sent." });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Internal server error" });
   }
 });

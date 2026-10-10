@@ -67,6 +67,9 @@ export function LoginPage({ onAuthSuccess }) {
                     password,
                     role: accountType,
                     businessName: fullName,
+                    documents: requiresVerification
+                      ? requiredDocuments.map(([id]) => registrationDocuments[id]?.name).filter(Boolean)
+                      : [],
                   }),
                 });
               } catch (requestError) {
@@ -109,9 +112,10 @@ export function LoginPage({ onAuthSuccess }) {
             // called onAuthSuccess(), so a wrong password still looked like a login.
             let session;
             try {
+              const rememberMe = signInData.get("rememberMe") === "on";
               session = await apiRequest("/api/auth/login", {
                 method: "POST",
-                body: JSON.stringify({ email: signInEmail, password: signInPassword }),
+                body: JSON.stringify({ email: signInEmail, password: signInPassword, rememberMe }),
               });
             } catch (requestError) {
               clearAuth();
@@ -227,7 +231,7 @@ export function LoginPage({ onAuthSuccess }) {
 
               <div className="mt-6 flex min-w-0 items-center justify-between gap-4 text-sm max-sm:flex-col max-sm:items-start">
                 <label className="flex min-w-0 items-start gap-3 leading-relaxed text-[#4b514f]">
-                  <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 rounded border-[#d0d8d3] accent-[#164f40]" />
+                  <input type="checkbox" name="rememberMe" className="mt-0.5 h-5 w-5 shrink-0 rounded border-[#d0d8d3] accent-[#164f40]" />
                   <span className="min-w-0 break-words">Remember this device for 30 days</span>
                 </label>
               </div>

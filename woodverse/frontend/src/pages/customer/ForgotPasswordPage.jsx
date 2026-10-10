@@ -4,7 +4,7 @@ import {
   Mail,
   Send,
 } from "lucide-react";
-import { navigate } from "../../utils";
+import { navigate, apiRequest } from "../../utils";
 import { BrandLogo } from "../../components/BrandLogo";
 import { AuthField, AuthShell } from "./LoginPage";
 
@@ -14,8 +14,17 @@ export function ForgotPasswordPage() {
   return (
     <AuthShell>
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const email = String(formData.get("email") || "").trim();
+          if (!email) return;
+          try {
+            await apiRequest("/api/auth/forgot-password", {
+              method: "POST",
+              body: JSON.stringify({ email }),
+            });
+          } catch {}
           setSent(true);
         }}
         className="flex min-h-[760px] flex-col px-16 py-16 max-lg:min-h-0 max-sm:px-7 max-sm:py-10"
@@ -32,7 +41,7 @@ export function ForgotPasswordPage() {
         </div>
 
         <div className="mt-11 grid gap-7">
-          <AuthField label="Email Address" placeholder="name@company.com" type="email" autoComplete="email" icon={Mail} />
+          <AuthField name="email" label="Email Address" placeholder="name@company.com" type="email" autoComplete="email" icon={Mail} />
         </div>
 
         {sent && (

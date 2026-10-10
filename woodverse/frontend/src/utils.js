@@ -26,8 +26,11 @@ const TOKEN_KEY = "woodverse-auth-token";
 const USER_KEY = "woodverse-api-user";
 
 export function getAuthToken() {
+  // Token is now in an HttpOnly cookie; JS cannot read it.
+  // Return a placeholder truthy value if the user key exists, so callers
+  // that check for a token before calling apiRequest still work.
   try {
-    return localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(USER_KEY) ? "cookie-auth" : null;
   } catch {
     return null;
   }
@@ -44,27 +47,22 @@ export function getAuthUser() {
 // A session exists only while there is a token that has not expired. The old code
 // trusted a separate `woodverse-authenticated` string, which anyone could set by hand.
 export function getSession() {
-  const token = getAuthToken();
-  if (!token) return null;
+  try {
+    // Clean up any legacy token stored under the old key (tokens are now HttpOnly cookies).
+    const legacyToken = localStorage.getItem(TOKEN_KEY);
+    if (legacyToken) localStorage.removeItem(TOKEN_KEY);
 
-  const claims = decodeJwt(token);
-  if (!claims) {
-    clearAuth();
+    const user = getAuthUser();
+    if (!user) return null;
+    return {
+      role: user.role || null,
+      id: user.id || null,
+      email: user.email || null,
+      fullName: user.fullName || null,
+    };
+  } catch {
     return null;
   }
-  if (typeof claims.exp === "number" && claims.exp * 1000 <= Date.now()) {
-    clearAuth();
-    return null;
-  }
-
-  const user = getAuthUser();
-  return {
-    token,
-    role: claims.role || user?.role || null,
-    id: claims.id || user?.id || null,
-    email: claims.email || user?.email || null,
-    fullName: claims.fullName || user?.fullName || null,
-  };
 }
 
 export function isAuthenticated() {
@@ -78,7 +76,7 @@ export function hasRole(...roles) {
 
 export function storeAuth({ token, user }) {
   try {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
+    // token is stored as HttpOnly cookie by the server — do not store in localStorage
     if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
   } catch {}
 }
@@ -94,7 +92,13 @@ export function clearAuth() {
 // Signs out from anywhere in the app, including the portal pages that render their own
 // shell instead of the storefront header. The token is dropped before the route changes
 // so no protected page can render in between.
-export function signOut() {
+export async function signOut() {
+  try {
+    await fetch((typeof import.meta !== "undefined" ? (import.meta.env?.VITE_API_URL || "") : "") + "/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {}
   clearAuth();
   navigate("/");
 }
@@ -108,7 +112,8 @@ function decodeJwt(token) {
   try {
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
-    return JSON.parse(decodeURIComponent(escape(atob(padded))));
+    const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
   } catch {
     return null;
   }
@@ -116,13 +121,12 @@ function decodeJwt(token) {
 
 export async function apiRequest(path, options = {}) {
   const baseUrl = import.meta.env.VITE_API_URL || "";
-  const token = getAuthToken();
   const response = await fetch(`${baseUrl}${path}`, {
     ...options,
+    credentials: "include",
     headers: {
       "content-type": "application/json",
       ...(options.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
   if (!response.ok) {
