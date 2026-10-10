@@ -5,8 +5,9 @@ import helmet from "helmet";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
-import { databaseConfigured, initializeDatabase } from "./db.js";
+import { databaseConfigured, initializeDatabase, getPool } from "./db.js";
 import { registerRoutes } from "./routes/index.js";
 import { devCredentials } from "./routes/auth.js";
 import { registerSocketHandlers } from "./socket.js";
@@ -19,14 +20,13 @@ const configuredOrigins = (process.env.WEB_ORIGIN || "http://localhost:5173,http
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-if (!process.env.JWT_SECRET) {
-  console.warn("JWT_SECRET is not set. Using a fallback secret. Set JWT_SECRET in production.");
-}
-
 const app = express();
 app.use(helmet());
 app.use(cors({ origin: configuredOrigins, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
+app.use(cookieParser());
+
+app.set("trust proxy", 1);
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { error: "Too many authentication attempts. Try again later." } });
 app.use("/api/auth", authLimiter);
@@ -45,6 +45,12 @@ const io = new Server(server, {
 registerRoutes(app, io);
 registerSocketHandlers(io);
 
+// Global Express error handler — must be 4-argument to be recognized as error middleware
+app.use((err, req, res, next) => {
+  console.error("[error]", err);
+  res.status(err.status || 500).json({ error: err.status ? err.message : "Internal server error" });
+});
+
 const frontendDistPath = path.join(__dirname, "..", "..", "..", "frontend", "dist");
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(frontendDistPath));
@@ -56,6 +62,12 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+process.on("unhandledRejection", (reason) => console.error("[unhandledRejection]", reason));
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err);
+  process.exit(1);
+});
+
 initializeDatabase()
   .then((result) => {
     const databaseStatus = result.initialized ? "ready" : "not_configured";
@@ -66,6 +78,28 @@ initializeDatabase()
         console.log("No database, so login falls back to seeded in-memory accounts:");
         for (const account of devCredentials) console.log(`  ${account.email} / ${account.password}`);
       }
+
+      const shutdown = (signal) => {
+        console.log("Received " + signal + ", shutting down...");
+        const hardKill = setTimeout(() => {
+          console.error("Graceful shutdown timed out, forcing exit");
+          process.exit(1);
+        }, 10000);
+        server.close(() => {
+          io.close(() => {
+            const activePool = getPool();
+            (activePool ? activePool.end() : Promise.resolve())
+              .then(() => {
+                clearTimeout(hardKill);
+                console.log("Graceful shutdown complete");
+                process.exit(0);
+              })
+              .catch(() => process.exit(1));
+          });
+        });
+      };
+      process.on("SIGTERM", () => shutdown("SIGTERM"));
+      process.on("SIGINT", () => shutdown("SIGINT"));
     });
   })
   .catch((error) => {

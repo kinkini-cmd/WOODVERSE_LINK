@@ -47,6 +47,7 @@ catalogRouter.get("/api/catalog", async (request, response) => {
     });
     response.json({ products, source: "postgresql" });
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error(error);
+    response.status(500).json({ error: "Internal server error" });
   }
 });

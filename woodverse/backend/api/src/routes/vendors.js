@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { databaseConfigured, query } from "../db.js";
 import { authenticateToken, authorizeRoles } from "../middleware/auth.js";
+import { asyncHandler } from "../utils/helpers.js";
 
 export const vendorsRouter = Router();
 
-vendorsRouter.post("/api/vendors", authenticateToken, authorizeRoles("vendor", "admin"), async (request, response) => {
+vendorsRouter.post("/api/vendors", authenticateToken, authorizeRoles("vendor", "admin"), asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const { userId, businessName, registrationNumber, description, documents = [] } = request.body;
   const effectiveUserId = request.user.role === "admin" ? userId : request.user.id;
@@ -35,10 +36,10 @@ vendorsRouter.post("/api/vendors", authenticateToken, authorizeRoles("vendor", "
     [effectiveUserId, businessName, registrationNumber || null, description || null, JSON.stringify(documents)]
   );
   response.status(201).json({ vendor: result.rows[0] });
-});
+}));
 
-vendorsRouter.get("/api/vendors", authenticateToken, async (request, response) => {
+vendorsRouter.get("/api/vendors", authenticateToken, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const result = await query("SELECT v.*, u.email, u.full_name FROM vendors v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC");
   response.json({ vendors: result.rows });
-});
+}));

@@ -53,15 +53,26 @@ aiRouter.post("/api/ai/stock-decision", authenticateToken, async (request, respo
 aiRouter.get("/api/ai/orders", authenticateToken, authorizeRoles("admin", "vendor", "customer"), async (request, response) => {
   if (!databaseConfigured) return response.json({ orders: [], source: "memory" });
   try {
-    const isAdmin = request.user.role === "admin";
-    const result = isAdmin
-      ? await query("SELECT id, customer_id, vendor_id, status, total_amount, requires_manufacturing, created_at, updated_at FROM orders ORDER BY created_at DESC")
-      : await query(
-          "SELECT id, customer_id, vendor_id, status, total_amount, requires_manufacturing, created_at, updated_at FROM orders WHERE customer_id = $1 ORDER BY created_at DESC",
-          [request.user.id]
-        );
-    response.json({ orders: result.rows });
+    let result;
+    if (request.user.role === "admin") {
+      result = await query("SELECT id, customer_id, vendor_id, status, total_amount, requires_manufacturing, created_at, updated_at FROM orders ORDER BY created_at DESC");
+    } else if (request.user.role === "vendor") {
+      const vendorResult = await query("SELECT id FROM vendors WHERE user_id = $1", [request.user.id]);
+      const vendorId = vendorResult.rows[0]?.id;
+      if (!vendorId) return response.json({ orders: [], source: "postgresql" });
+      result = await query(
+        "SELECT id, customer_id, vendor_id, status, total_amount, requires_manufacturing, created_at, updated_at FROM orders WHERE vendor_id = $1 ORDER BY created_at DESC",
+        [vendorId]
+      );
+    } else {
+      result = await query(
+        "SELECT id, customer_id, vendor_id, status, total_amount, requires_manufacturing, created_at, updated_at FROM orders WHERE customer_id = $1 ORDER BY created_at DESC",
+        [request.user.id]
+      );
+    }
+    response.json({ orders: result.rows, source: "postgresql" });
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error(error);
+    response.status(500).json({ error: "Internal server error" });
   }
 });

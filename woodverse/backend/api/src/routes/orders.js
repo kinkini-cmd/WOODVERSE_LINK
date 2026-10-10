@@ -97,13 +97,15 @@ ordersRouter.post("/api/orders", authenticateToken, authorizeRoles("customer", "
     );
 
     const created = result.rows[0];
-    orders.unshift({
-      id: created.id,
-      customer: request.user.fullName,
-      status: requiresManufacturing ? "Vendor Approval" : "Processing",
-      requiresVendorApproval: requiresManufacturing,
-      createdAt: created.created_at,
-    });
+    if (!databaseConfigured) {
+      orders.unshift({
+        id: created.id,
+        customer: request.user.fullName,
+        status: requiresManufacturing ? "Vendor Approval" : "Processing",
+        requiresVendorApproval: requiresManufacturing,
+        createdAt: created.created_at,
+      });
+    }
 
     if (request.io) {
       const rooms = new Set(["woodverse-notifications"]);
@@ -136,7 +138,8 @@ ordersRouter.post("/api/orders", authenticateToken, authorizeRoles("customer", "
       pricing: { subtotal, delivery, assurance, total },
     });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    console.error(error);
+    return response.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -165,6 +168,7 @@ ordersRouter.get("/api/orders", authenticateToken, authorizeRoles("admin", "vend
     }
     response.json({ orders: result.rows });
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error(error);
+    response.status(500).json({ error: "Internal server error" });
   }
 });

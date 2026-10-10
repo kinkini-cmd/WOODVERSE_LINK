@@ -42,7 +42,7 @@ describe("ProfilePage invoice download", () => {
     const text = await created[0].text();
     expect(text).toContain("WOODVERSE INVOICE");
     expect(text).toContain("Invoice number: WV-10482");
-    expect(text).toContain("Billed to: WoodVerse Customer");
+    expect(text).toContain("Billed to: Demo Customer");
     expect(text).toContain("Items");
     expect(revoked).toEqual(["blob:woodverse-invoice"]);
   });

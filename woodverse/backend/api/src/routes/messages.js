@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { databaseConfigured, query } from "../db.js";
 import { authenticateToken } from "../middleware/auth.js";
+import { asyncHandler } from "../utils/helpers.js";
 
 export const messagesRouter = Router();
 
-messagesRouter.post("/api/messages", authenticateToken, async (request, response) => {
+messagesRouter.post("/api/messages", authenticateToken, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const { senderId, recipientId, threadId, body } = request.body;
   if (!senderId || !recipientId || !body) return response.status(400).json({ error: "senderId, recipientId, and body are required." });
@@ -13,9 +14,9 @@ messagesRouter.post("/api/messages", authenticateToken, async (request, response
   }
   const result = await query("INSERT INTO messages (sender_id, recipient_id, thread_id, body) VALUES ($1, $2, COALESCE($3, gen_random_uuid()), $4) RETURNING *", [senderId, recipientId, threadId || null, body]);
   response.status(201).json({ message: result.rows[0] });
-});
+}));
 
-messagesRouter.get("/api/messages", authenticateToken, async (request, response) => {
+messagesRouter.get("/api/messages", authenticateToken, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const values = [];
   const whereClauses = [];
@@ -32,4 +33,4 @@ messagesRouter.get("/api/messages", authenticateToken, async (request, response)
   const where = whereClauses.length ? `WHERE ${whereClauses.join(" AND ")}` : "";
   const result = await query(`SELECT * FROM messages ${where} ORDER BY created_at ASC`, values);
   response.json({ messages: result.rows });
-});
+}));

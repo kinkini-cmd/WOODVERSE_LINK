@@ -1,5 +1,7 @@
 export const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+export const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
 // Checkout fees are a server decision. The browser used to send its own total, which
 // let a caller set their own price.
 export const DELIVERY_FEE = 7500;

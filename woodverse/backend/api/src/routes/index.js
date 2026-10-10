@@ -11,6 +11,7 @@ import { messagesRouter } from "./messages.js";
 import { aiRouter } from "./ai.js";
 import { notificationsRouter } from "./notifications.js";
 
+// Routes are currently at /api/*. A /api/v1/* alias can be added here when clients are updated.
 export function registerRoutes(app, io) {
   app.use(healthRouter);
   app.use(authRouter);

@@ -2,13 +2,14 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { databaseConfigured, query } from "../db.js";
 import { authenticateToken, isAdmin } from "../middleware/auth.js";
+import { asyncHandler } from "../utils/helpers.js";
 
 export const usersRouter = Router();
 
 // Admin only. This endpoint used to be unauthenticated, which let anyone create an
 // admin account for themselves. Public self-registration goes through /api/auth/register,
 // which cannot mint an admin.
-usersRouter.post("/api/users", authenticateToken, isAdmin, async (request, response) => {
+usersRouter.post("/api/users", authenticateToken, isAdmin, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const { email, fullName, role = "customer", password } = request.body;
   if (!email || !fullName || !["customer", "vendor", "supplier", "admin"].includes(role)) return response.status(400).json({ error: "email, fullName, and a valid role are required." });
@@ -19,12 +20,12 @@ usersRouter.post("/api/users", authenticateToken, isAdmin, async (request, respo
     delete user.password_hash;
     response.status(201).json({ user });
   } catch (error) {
-    response.status(error.code === "23505" ? 409 : 500).json({ error: error.message });
+    response.status(error.code === "23505" ? 409 : 500).json({ error: error.code === "23505" ? "An account with this email already exists." : "Internal server error" });
   }
-});
+}));
 
-usersRouter.get("/api/users", authenticateToken, isAdmin, async (request, response) => {
+usersRouter.get("/api/users", authenticateToken, isAdmin, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
   const result = await query("SELECT id, email, full_name, role, status, created_at FROM users ORDER BY created_at DESC");
   response.json({ users: result.rows });
-});
+}));
