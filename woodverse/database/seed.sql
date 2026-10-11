@@ -2,28 +2,30 @@ BEGIN;
 
 TRUNCATE TABLE customization_requests, product_customizations, paint_options, fabric_options, messages, quotations, orders, products, vendors, users RESTART IDENTITY CASCADE;
 
-INSERT INTO users (id, email, role, full_name, status)
+-- Seeded accounts: all use password 'password123' (bcrypt cost 12)
+-- Generated: node -e "const bcrypt = require('bcryptjs'); bcrypt.hash('password123', 12).then(h => console.log(h))"
+INSERT INTO users (id, email, role, full_name, status, password_hash)
 VALUES
-  ('00000000-0000-4000-8000-000000000101', 'vendor01@woodverse.lk', 'vendor', 'Moratuwa Crafts Admin', 'active'),
-  ('00000000-0000-4000-8000-000000000102', 'vendor02@woodverse.lk', 'vendor', 'Ceylon Woods Admin', 'active'),
-  ('00000000-0000-4000-8000-000000000103', 'vendor03@woodverse.lk', 'vendor', 'Urban Log Admin', 'active'),
-  ('00000000-0000-4000-8000-000000000104', 'vendor04@woodverse.lk', 'vendor', 'Grand Timber Admin', 'active'),
-  ('00000000-0000-4000-8000-000000000105', 'vendor05@woodverse.lk', 'vendor', 'Lumbini Timber Studio', 'active'),
-  ('00000000-0000-4000-8000-000000000106', 'vendor06@woodverse.lk', 'vendor', 'Kandy Hardwood Works', 'active'),
-  ('00000000-0000-4000-8000-000000000107', 'vendor07@woodverse.lk', 'vendor', 'Galle Craft House', 'active'),
-  ('00000000-0000-4000-8000-000000000108', 'vendor08@woodverse.lk', 'vendor', 'Kurunegala Joinery', 'active'),
-  ('00000000-0000-4000-8000-000000000109', 'vendor09@woodverse.lk', 'vendor', 'Colombo Wood Lab', 'active'),
-  ('00000000-0000-4000-8000-000000000110', 'vendor10@woodverse.lk', 'vendor', 'Negombo Artisan Co', 'active'),
-  ('00000000-0000-4000-8000-000000000111', 'vendor11@woodverse.lk', 'vendor', 'Matara Home Craft', 'active'),
-  ('00000000-0000-4000-8000-000000000112', 'vendor12@woodverse.lk', 'vendor', 'Jaffna Timber Works', 'active'),
-  ('00000000-0000-4000-8000-000000000113', 'vendor13@woodverse.lk', 'vendor', 'Nuwara Oak Studio', 'active'),
-  ('00000000-0000-4000-8000-000000000114', 'vendor14@woodverse.lk', 'vendor', 'Ratnapura Woodline', 'active'),
-  ('00000000-0000-4000-8000-000000000115', 'vendor15@woodverse.lk', 'vendor', 'Anuradhapura Craft Mill', 'active'),
-  ('00000000-0000-4000-8000-000000000116', 'vendor16@woodverse.lk', 'vendor', 'Batticaloa Cane Works', 'active'),
-  ('00000000-0000-4000-8000-000000000117', 'vendor17@woodverse.lk', 'vendor', 'Trinco Coastal Craft', 'active'),
-  ('00000000-0000-4000-8000-000000000118', 'vendor18@woodverse.lk', 'vendor', 'Ella Wood Studio', 'active'),
-  ('00000000-0000-4000-8000-000000000119', 'vendor19@woodverse.lk', 'vendor', 'Hikkaduwa Gift Works', 'active'),
-  ('00000000-0000-4000-8000-000000000120', 'vendor20@woodverse.lk', 'vendor', 'Panadura Furniture Co', 'active');
+  ('00000000-0000-4000-8000-000000000101', 'vendor01@woodverse.example', 'vendor', 'Moratuwa Crafts Admin', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000102', 'vendor02@woodverse.example', 'vendor', 'Ceylon Woods Admin', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000103', 'vendor03@woodverse.example', 'vendor', 'Urban Log Admin', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000104', 'vendor04@woodverse.example', 'vendor', 'Grand Timber Admin', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000105', 'vendor05@woodverse.example', 'vendor', 'Lumbini Timber Studio', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000106', 'vendor06@woodverse.example', 'vendor', 'Kandy Hardwood Works', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000107', 'vendor07@woodverse.example', 'vendor', 'Galle Craft House', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000108', 'vendor08@woodverse.example', 'vendor', 'Kurunegala Joinery', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000109', 'vendor09@woodverse.example', 'vendor', 'Colombo Wood Lab', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000110', 'vendor10@woodverse.example', 'vendor', 'Negombo Artisan Co', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000111', 'vendor11@woodverse.example', 'vendor', 'Matara Home Craft', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000112', 'vendor12@woodverse.example', 'vendor', 'Jaffna Timber Works', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000113', 'vendor13@woodverse.example', 'vendor', 'Nuwara Oak Studio', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000114', 'vendor14@woodverse.example', 'vendor', 'Ratnapura Woodline', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000115', 'vendor15@woodverse.example', 'vendor', 'Anuradhapura Craft Mill', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000116', 'vendor16@woodverse.example', 'vendor', 'Batticaloa Cane Works', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000117', 'vendor17@woodverse.example', 'vendor', 'Trinco Coastal Craft', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000118', 'vendor18@woodverse.example', 'vendor', 'Ella Wood Studio', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000119', 'vendor19@woodverse.example', 'vendor', 'Hikkaduwa Gift Works', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2'),
+  ('00000000-0000-4000-8000-000000000120', 'vendor20@woodverse.example', 'vendor', 'Panadura Furniture Co', 'active', '$2b$12$UhrMw6BDOLFVdP.NzvNiCOkjd.uL.bl178oeJ6mQ4HOIWq8px9/Q2');
 
 INSERT INTO vendors (id, user_id, business_name, registration_number, description, verification_status, documents)
 VALUES

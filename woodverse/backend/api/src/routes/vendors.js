@@ -40,6 +40,14 @@ vendorsRouter.post("/api/vendors", authenticateToken, authorizeRoles("vendor", "
 
 vendorsRouter.get("/api/vendors", authenticateToken, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
-  const result = await query("SELECT v.*, u.email, u.full_name FROM vendors v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC");
-  response.json({ vendors: result.rows });
+  const page = Math.max(1, parseInt(request.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(request.query.limit) || 20));
+  const offset = (page - 1) * limit;
+  const countResult = await query("SELECT COUNT(*) FROM vendors v JOIN users u ON u.id = v.user_id");
+  const total = parseInt(countResult.rows[0].count, 10);
+  const result = await query(
+    "SELECT v.*, u.email, u.full_name FROM vendors v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC LIMIT $1 OFFSET $2",
+    [limit, offset]
+  );
+  response.json({ data: result.rows, meta: { total, page, limit, pages: Math.ceil(total / limit) } });
 }));

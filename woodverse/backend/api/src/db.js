@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import dns from "node:dns";
+import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
 
 dns.setDefaultResultOrder("ipv4first");
@@ -126,8 +127,36 @@ export async function query(text, values = []) {
 export async function initializeDatabase() {
   if (!databaseConfigured) return { configured: false, initialized: false };
   await poolReady;
-  const schema = await readFile(new URL("./schema.sql", import.meta.url), "utf8");
   const pool = getPool();
-  await pool.query(schema);
+  try {
+    const migrationsDir = new URL("./migrations/", import.meta.url);
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS _migrations (id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
+    );
+    const applied = new Set(
+      (await pool.query("SELECT name FROM _migrations ORDER BY id")).rows.map((r) => r.name)
+    );
+    const files = (await readdir(fileURLToPath(migrationsDir))).filter((f) => f.endsWith(".sql")).sort();
+    for (const file of files) {
+      if (applied.has(file)) continue;
+      const sql = await readFile(fileURLToPath(new URL(file, migrationsDir)), "utf8");
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        await client.query(sql);
+        await client.query("INSERT INTO _migrations (name) VALUES ($1)", [file]);
+        await client.query("COMMIT");
+        console.log("[db] Migration applied:", file);
+      } catch (err) {
+        await client.query("ROLLBACK").catch(() => {});
+        console.error("[db] Migration failed:", file, err.message);
+        throw err;
+      } finally {
+        client.release();
+      }
+    }
+  } catch (err) {
+    console.error("[db] initializeDatabase error:", err.message);
+  }
   return { configured: true, initialized: true };
 }

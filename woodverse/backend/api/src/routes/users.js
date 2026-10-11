@@ -26,6 +26,26 @@ usersRouter.post("/api/users", authenticateToken, isAdmin, asyncHandler(async (r
 
 usersRouter.get("/api/users", authenticateToken, isAdmin, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
-  const result = await query("SELECT id, email, full_name, role, status, created_at FROM users ORDER BY created_at DESC");
-  response.json({ users: result.rows });
+  const page = Math.max(1, parseInt(request.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(request.query.limit) || 20));
+  const offset = (page - 1) * limit;
+  const countResult = await query("SELECT COUNT(*) FROM users");
+  const total = parseInt(countResult.rows[0].count, 10);
+  const result = await query(
+    "SELECT id, email, full_name, role, status, created_at FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+    [limit, offset]
+  );
+  response.json({ data: result.rows, meta: { total, page, limit, pages: Math.ceil(total / limit) } });
+}));
+
+usersRouter.patch("/api/users/:id/status", authenticateToken, isAdmin, asyncHandler(async (request, response) => {
+  if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
+  const { status } = request.body;
+  if (!["active", "suspended"].includes(status)) return response.status(400).json({ error: "Status must be active or suspended." });
+  const result = await query(
+    "UPDATE users SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING id, email, full_name, role, status",
+    [status, request.params.id]
+  );
+  if (!result.rows.length) return response.status(404).json({ error: "User not found." });
+  return response.json({ user: result.rows[0] });
 }));

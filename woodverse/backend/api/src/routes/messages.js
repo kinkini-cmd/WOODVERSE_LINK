@@ -18,6 +18,10 @@ messagesRouter.post("/api/messages", authenticateToken, asyncHandler(async (requ
 
 messagesRouter.get("/api/messages", authenticateToken, asyncHandler(async (request, response) => {
   if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
+  const page = Math.max(1, parseInt(request.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(request.query.limit) || 20));
+  const offset = (page - 1) * limit;
+
   const values = [];
   const whereClauses = [];
   let paramIndex = 1;
@@ -31,6 +35,26 @@ messagesRouter.get("/api/messages", authenticateToken, asyncHandler(async (reque
   values.push(request.user.id, request.user.id);
 
   const where = whereClauses.length ? `WHERE ${whereClauses.join(" AND ")}` : "";
-  const result = await query(`SELECT * FROM messages ${where} ORDER BY created_at ASC`, values);
-  response.json({ messages: result.rows });
+
+  const countResult = await query(`SELECT COUNT(*) FROM messages ${where}`, values);
+  const total = parseInt(countResult.rows[0].count, 10);
+
+  const dataValues = [...values, limit, offset];
+  const result = await query(
+    `SELECT * FROM messages ${where} ORDER BY created_at ASC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+    dataValues
+  );
+  response.json({ data: result.rows, meta: { total, page, limit, pages: Math.ceil(total / limit) } });
+}));
+
+messagesRouter.patch("/api/messages/:id/read", authenticateToken, asyncHandler(async (request, response) => {
+  if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
+  const msgResult = await query("SELECT * FROM messages WHERE id = $1", [request.params.id]);
+  const msg = msgResult.rows[0];
+  if (!msg) return response.status(404).json({ error: "Message not found." });
+  if (String(msg.recipient_id) !== String(request.user.id) && request.user.role !== "admin") {
+    return response.status(403).json({ error: "Not your message." });
+  }
+  const result = await query("UPDATE messages SET read_at = NOW() WHERE id = $1 RETURNING *", [request.params.id]);
+  return response.json({ message: result.rows[0] });
 }));

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { databaseConfigured, query } from "../db.js";
 import { buildFulfillmentPlan } from "../utils/helpers.js";
 import { catalogProducts, orders } from "../data/memory.js";
-import { currentTime, DELIVERY_FEE, ASSURANCE_FEE, parseOrderItems, uuidPattern } from "../utils/helpers.js";
+import { currentTime, DELIVERY_FEE, ASSURANCE_FEE, parseOrderItems, uuidPattern, asyncHandler } from "../utils/helpers.js";
 import { authenticateToken, authorizeRoles } from "../middleware/auth.js";
 
 export const ordersRouter = Router();
@@ -157,18 +157,47 @@ ordersRouter.get("/api/orders", authenticateToken, authorizeRoles("admin", "vend
     let result;
     if (request.user.role === "customer") {
       result = await query(`${selectOrders} WHERE o.customer_id = $1 ORDER BY o.created_at DESC`, [request.user.id]);
+      return response.json({ orders: result.rows });
     } else if (request.user.role === "vendor") {
       const vendorResult = await query("SELECT id FROM vendors WHERE user_id = $1", [request.user.id]);
       const vendorId = vendorResult.rows[0]?.id;
       // A vendor with no vendor row yet sees nothing rather than everyone's orders.
       if (!vendorId) return response.json({ orders: [] });
       result = await query(`${selectOrders} WHERE o.vendor_id = $1 ORDER BY o.created_at DESC`, [vendorId]);
+      return response.json({ orders: result.rows });
     } else {
-      result = await query(`${selectOrders} ORDER BY o.created_at DESC`);
+      // Admin: paginated
+      const page = Math.max(1, parseInt(request.query.page) || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(request.query.limit) || 20));
+      const offset = (page - 1) * limit;
+      const countResult = await query("SELECT COUNT(*) FROM orders");
+      const total = parseInt(countResult.rows[0].count, 10);
+      result = await query(`${selectOrders} ORDER BY o.created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
+      return response.json({ data: result.rows, meta: { total, page, limit, pages: Math.ceil(total / limit) } });
     }
-    response.json({ orders: result.rows });
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: "Internal server error" });
   }
 });
+
+ordersRouter.patch("/api/orders/:id/status", authenticateToken, authorizeRoles("vendor", "admin"), asyncHandler(async (request, response) => {
+  if (!databaseConfigured) return response.status(503).json({ error: "PostgreSQL is not configured." });
+  const { id } = request.params;
+  const { status } = request.body;
+  const VALID_STATUSES = ["vendor_approval", "processing", "manufacturing", "ready_for_delivery", "shipped", "completed", "cancelled"];
+  if (!VALID_STATUSES.includes(status)) return response.status(400).json({ error: "Invalid status value." });
+  const orderResult = await query("SELECT id, vendor_id, status FROM orders WHERE id = $1", [id]);
+  const order = orderResult.rows[0];
+  if (!order) return response.status(404).json({ error: "Order not found." });
+  if (request.user.role === "vendor") {
+    const vendorResult = await query("SELECT id FROM vendors WHERE user_id = $1", [request.user.id]);
+    const vendorId = vendorResult.rows[0]?.id;
+    if (!vendorId || String(order.vendor_id) !== String(vendorId)) {
+      return response.status(403).json({ error: "You can only update orders for your vendor account." });
+    }
+    if (status === "cancelled") return response.status(403).json({ error: "Only admins can cancel orders." });
+  }
+  const result = await query("UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *", [status, id]);
+  return response.json({ order: result.rows[0] });
+}));

@@ -1,34 +1,10 @@
 # Database
 
-PostgreSQL schema and seed data for WoodVerse.
+The canonical schema is managed via migrations in `backend/api/src/migrations/`.
 
-## Contents
-
-- `schema.sql` - Database schema with tables, indexes, and constraints
-- `seed.sql` - Seed data for development
-
-## Setup
-
-1. Create a PostgreSQL database:
-    ```bash
-    createdb woodverse
-    ```
-
-2. Apply the schema:
-    ```bash
-    psql -d woodverse -f database/schema.sql
-    ```
-
-3. Apply seed data (optional):
-    ```bash
-    psql -d woodverse -f database/seed.sql
-    ```
-
-## Connection
-
-Set the `DATABASE_URL` environment variable:
+Run:
 ```
-DATABASE_URL=postgresql://woodverse:woodverse@localhost:5432/woodverse
+npm run migrate --workspace=backend/api
 ```
 
-The API service (`backend/api`) connects to this database on startup.
+See `database/seed.sql` for development seed data.
