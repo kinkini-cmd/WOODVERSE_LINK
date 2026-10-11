@@ -85,7 +85,7 @@ export function VendorSuppliersPage() {
       linkedWork,
       status: "Requested",
       dueDate: getFutureDateLabel(5),
-      vendor: "Perera Artisan Works",
+      vendor: "Demo Woodworks",
       sentAt: "Just now",
     };
     const supplierRequest = {

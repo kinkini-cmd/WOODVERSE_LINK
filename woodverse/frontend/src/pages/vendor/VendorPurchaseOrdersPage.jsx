@@ -86,7 +86,7 @@ export function VendorPurchaseOrdersPage() {
     appendStoredList(supplierNotificationsStorageKey, {
       id: `spo-${Date.now()}`,
       type: "Purchase Order",
-      title: `New purchase order ${nextId} from Perera Artisan Works`,
+      title: `New purchase order ${nextId} from Demo Woodworks`,
       detail: `${numericQuantity} ${unit} of ${material} for ${linkedWork}. Total LKR ${draftTotal.toLocaleString("en-US")}. Due ${dueDate}.`,
       time: "Just now",
       priority: "High",

@@ -229,7 +229,7 @@ export function AllOrdersModal({ orders, onClose }) {
 
 export function NewOrderModal({ onClose, onSubmit }) {
   const [form, setForm] = useState({
-    customer: "Nimali Fernando",
+    customer: "Demo Customer 7",
     product: "Custom teak dining table",
     amount: "LKR 180,000",
     dueDate: "2026-08-15",
@@ -280,7 +280,7 @@ export function NewOrderModal({ onClose, onSubmit }) {
 export function WorkOrderModal({ onClose, onSubmit }) {
   const [form, setForm] = useState({
     orderId: "#WV-9482",
-    customer: "Kasun Wijesinghe",
+    customer: "Demo Customer 3",
     product: "Royal teak lounge chair",
     stage: "Carpentry",
     priority: "High Priority",

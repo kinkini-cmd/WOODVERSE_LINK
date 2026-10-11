@@ -264,7 +264,7 @@ export function AdminDashboardPage() {
     const product = {
       id: `PRD-${Date.now().toString().slice(-4)}`,
       name: "New WoodVerse Product",
-      vendor: "Perera Artisan Works",
+      vendor: "Demo Woodworks",
       category: "Furniture",
       price: "LKR 0",
       stock: 0,
@@ -335,7 +335,7 @@ export function AdminDashboardPage() {
     const order = {
       id: `ORD-${Date.now().toString().slice(-4)}`,
       customer: "New Customer",
-      vendor: "Perera Artisan Works",
+      vendor: "Demo Woodworks",
       product: "New Product Order",
       amount: "LKR 0",
       payment: "Pending",
@@ -448,7 +448,7 @@ export function AdminDashboardPage() {
       id: `PAY-${Date.now().toString().slice(-4)}`,
       orderId: "ORD-New",
       customer: "New Customer",
-      vendor: "Perera Artisan Works",
+      vendor: "Demo Woodworks",
       amount: "LKR 0",
       method: "Card",
       status: "Pending",
@@ -595,7 +595,7 @@ export function AdminDashboardPage() {
     const entity = {
       id: `${prefix}-${Date.now().toString().slice(-4)}`,
       name: `New ${singular}`,
-      email: `new.${singular.toLowerCase()}@woodverse.lk`,
+      email: `new.${singular.toLowerCase()}@woodverse.example`,
       location: "Colombo",
       status: section === "Customers" ? "Active" : "Pending",
       orders: 0,

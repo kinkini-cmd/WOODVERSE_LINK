@@ -22,10 +22,10 @@ import { SettingsInput, SettingsSelect } from "./shared";
 
 export function VendorSettingsPage() {
   const defaultSettings = {
-    businessName: "Perera Artisan Works",
-    contactName: "Aruni Perera",
-    email: "aruni@pereraartisan.lk",
-    phone: "+94 77 412 8890",
+    businessName: "Demo Woodworks",
+    contactName: "Demo Vendor",
+    email: "vendor@woodverse.example",
+    phone: "+94 77 000 0000",
     language: "English",
     timezone: "Asia/Colombo",
     currency: "LKR",

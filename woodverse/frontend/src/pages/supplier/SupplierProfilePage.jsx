@@ -20,12 +20,12 @@ import { ProfileInfoRow, SupplierProfileField } from "./shared";
 
 export function SupplierProfilePage({ theme, onToggleTheme }) {
   const defaultProfile = {
-    companyName: "Lumbini Timber Co.",
-    registration: "PV-20491",
-    email: "operations@lumbinitimber.lk",
-    phone: "+94 11 245 8891",
-    address: "No. 18, Galle Main Yard, Galle, Sri Lanka",
-    manager: "John Doe",
+    companyName: "Demo Timber Co.",
+    registration: "PV-00000",
+    email: "supplier@woodverse.example",
+    phone: "+94 11 000 0000",
+    address: "No. 123, Demo Road, Demo City, Sri Lanka",
+    manager: "Demo Manager",
     managerRole: "Logistics Manager",
   };
   const [notice, setNotice] = useState("Supplier profile loaded.");

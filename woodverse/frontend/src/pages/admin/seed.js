@@ -44,41 +44,41 @@ export const metricCards = [
 ];
 
 export const approvalSeed = [
-  { id: "APR-1048", initials: "AW", name: "Arpico Woodworks", email: "arpico.wood@example.com", type: "Vendor", requested: "Oct 24, 10:45 AM", status: "Pending" },
-  { id: "APR-1047", initials: "SL", name: "Saman Loggers Ltd", email: "contact@samanlogs.lk", type: "Supplier", requested: "Oct 23, 04:20 PM", status: "Review" },
-  { id: "APR-1046", initials: "HF", name: "Heritage Furnishings", email: "legal@heritage.lk", type: "Vendor", requested: "Oct 23, 11:10 AM", status: "Pending" },
+  { id: "APR-1048", initials: "DW", name: "Demo Woodworks", email: "vendor1@woodverse.example", type: "Vendor", requested: "Oct 24, 10:45 AM", status: "Pending" },
+  { id: "APR-1047", initials: "DL", name: "Demo Loggers Ltd", email: "supplier1@woodverse.example", type: "Supplier", requested: "Oct 23, 04:20 PM", status: "Review" },
+  { id: "APR-1046", initials: "DF", name: "Demo Furnishings", email: "vendor2@woodverse.example", type: "Vendor", requested: "Oct 23, 11:10 AM", status: "Pending" },
 ];
 
 export const customerSeed = [
-  { id: "CUS-2450", name: "Kasun Wijesinghe", email: "kasun@example.com", location: "Colombo", status: "Active", orders: 8, value: "LKR 645,000", joined: "Jul 12, 2026" },
-  { id: "CUS-2449", name: "Shani De Silva", email: "shani@example.com", location: "Galle", status: "Active", orders: 5, value: "LKR 312,000", joined: "Jul 10, 2026" },
-  { id: "CUS-2448", name: "Ranil Thilak", email: "ranil@example.com", location: "Kandy", status: "Watch", orders: 3, value: "LKR 185,000", joined: "Jul 08, 2026" },
+  { id: "CUS-2450", name: "Demo Customer", email: "customer1@woodverse.example", location: "Colombo", status: "Active", orders: 8, value: "LKR 645,000", joined: "Jul 12, 2026" },
+  { id: "CUS-2449", name: "Demo Customer 2", email: "customer2@woodverse.example", location: "Galle", status: "Active", orders: 5, value: "LKR 312,000", joined: "Jul 10, 2026" },
+  { id: "CUS-2448", name: "Demo Customer 3", email: "customer3@woodverse.example", location: "Kandy", status: "Watch", orders: 3, value: "LKR 185,000", joined: "Jul 08, 2026" },
 ];
 
 export const vendorSeed = [
-  { id: "VEN-0184", name: "Perera Artisan Works", email: "aruni@pereraartisan.lk", location: "Moratuwa", status: "Verified", orders: 42, value: "LKR 2.8M", joined: "Jun 02, 2026" },
-  { id: "VEN-0183", name: "Heritage Furnishings", email: "legal@heritage.lk", location: "Nugegoda", status: "Pending", orders: 12, value: "LKR 740,000", joined: "Jul 21, 2026" },
-  { id: "VEN-0182", name: "Arpico Woodworks", email: "arpico.wood@example.com", location: "Ratmalana", status: "Review", orders: 0, value: "LKR 0", joined: "Jul 24, 2026" },
+  { id: "VEN-0184", name: "Demo Woodworks", email: "vendor@woodverse.example", location: "Moratuwa", status: "Verified", orders: 42, value: "LKR 2.8M", joined: "Jun 02, 2026" },
+  { id: "VEN-0183", name: "Demo Furnishings", email: "vendor2@woodverse.example", location: "Nugegoda", status: "Pending", orders: 12, value: "LKR 740,000", joined: "Jul 21, 2026" },
+  { id: "VEN-0182", name: "Demo Woodworks 2", email: "vendor3@woodverse.example", location: "Ratmalana", status: "Review", orders: 0, value: "LKR 0", joined: "Jul 24, 2026" },
 ];
 
 export const supplierSeed = [
-  { id: "SUP-0042", name: "Lumbini Timber Co.", email: "sales@lumbinitimber.lk", location: "Kegalle", status: "Verified", orders: 18, value: "LKR 1.4M", joined: "May 18, 2026" },
-  { id: "SUP-0041", name: "Saman Loggers Ltd", email: "contact@samanlogs.lk", location: "Matara", status: "Review", orders: 9, value: "LKR 820,000", joined: "Jul 19, 2026" },
-  { id: "SUP-0040", name: "Ceylon Hardwood Mills", email: "supply@ceylonhardwood.lk", location: "Kurunegala", status: "Verified", orders: 15, value: "LKR 1.1M", joined: "Apr 27, 2026" },
+  { id: "SUP-0042", name: "Demo Timber Co.", email: "supplier@woodverse.example", location: "Kegalle", status: "Verified", orders: 18, value: "LKR 1.4M", joined: "May 18, 2026" },
+  { id: "SUP-0041", name: "Demo Loggers Ltd", email: "supplier1@woodverse.example", location: "Matara", status: "Review", orders: 9, value: "LKR 820,000", joined: "Jul 19, 2026" },
+  { id: "SUP-0040", name: "Demo Hardwood Mills", email: "supply@woodverse.example", location: "Kurunegala", status: "Verified", orders: 15, value: "LKR 1.1M", joined: "Apr 27, 2026" },
 ];
 
 export const productSeed = [
-  { id: "PRD-1240", name: "Walnut Task Table", vendor: "Perera Artisan Works", category: "Office Furniture", price: "LKR 145,000", stock: 18, status: "Published", featured: true, sales: 32, submitted: "Jul 22, 2026" },
-  { id: "PRD-1239", name: "Teak Dining Table", vendor: "Heritage Furnishings", category: "Dining Room", price: "LKR 285,000", stock: 6, status: "Pending Review", featured: false, sales: 0, submitted: "Jul 25, 2026" },
-  { id: "PRD-1238", name: "Mahogany Coffee Table", vendor: "Arpico Woodworks", category: "Living Room", price: "LKR 89,000", stock: 0, status: "Stock Hold", featured: false, sales: 14, submitted: "Jul 18, 2026" },
-  { id: "PRD-1237", name: "Carved Gift Box", vendor: "Perera Artisan Works", category: "Wooden Gifts", price: "LKR 18,500", stock: 42, status: "Published", featured: true, sales: 58, submitted: "Jul 12, 2026" },
+  { id: "PRD-1240", name: "Walnut Task Table", vendor: "Demo Woodworks", category: "Office Furniture", price: "LKR 145,000", stock: 18, status: "Published", featured: true, sales: 32, submitted: "Jul 22, 2026" },
+  { id: "PRD-1239", name: "Teak Dining Table", vendor: "Demo Furnishings", category: "Dining Room", price: "LKR 285,000", stock: 6, status: "Pending Review", featured: false, sales: 0, submitted: "Jul 25, 2026" },
+  { id: "PRD-1238", name: "Mahogany Coffee Table", vendor: "Demo Woodworks 2", category: "Living Room", price: "LKR 89,000", stock: 0, status: "Stock Hold", featured: false, sales: 14, submitted: "Jul 18, 2026" },
+  { id: "PRD-1237", name: "Carved Gift Box", vendor: "Demo Woodworks", category: "Wooden Gifts", price: "LKR 18,500", stock: 42, status: "Published", featured: true, sales: 58, submitted: "Jul 12, 2026" },
 ];
 
 export const orderSeed = [
-  { id: "ORD-5524", customer: "Kasun Wijesinghe", vendor: "Perera Artisan Works", product: "Walnut Task Table", amount: "LKR 145,000", payment: "Paid", fulfillment: "Customer Delivery", status: "Completed", date: "Jul 30, 2026", priority: "Normal" },
-  { id: "ORD-5523", customer: "Shani De Silva", vendor: "Heritage Furnishings", product: "Teak Dining Table", amount: "LKR 285,000", payment: "Authorized", fulfillment: "Production", status: "Processing", date: "Jul 29, 2026", priority: "High" },
-  { id: "ORD-5522", customer: "Ranil Thilak", vendor: "Arpico Woodworks", product: "Mahogany Coffee Table", amount: "LKR 89,000", payment: "Pending", fulfillment: "Vendor Approval", status: "Vendor Approval", date: "Jul 28, 2026", priority: "High" },
-  { id: "ORD-5521", customer: "Amara Jayawardena", vendor: "Perera Artisan Works", product: "Carved Gift Box", amount: "LKR 18,500", payment: "Refund Requested", fulfillment: "Customer Delivery", status: "Refund Review", date: "Jul 27, 2026", priority: "Urgent" },
+  { id: "ORD-5524", customer: "Demo Customer", vendor: "Demo Woodworks", product: "Walnut Task Table", amount: "LKR 145,000", payment: "Paid", fulfillment: "Customer Delivery", status: "Completed", date: "Jul 30, 2026", priority: "Normal" },
+  { id: "ORD-5523", customer: "Demo Customer 2", vendor: "Demo Furnishings", product: "Teak Dining Table", amount: "LKR 285,000", payment: "Authorized", fulfillment: "Production", status: "Processing", date: "Jul 29, 2026", priority: "High" },
+  { id: "ORD-5522", customer: "Demo Customer 3", vendor: "Demo Woodworks 2", product: "Mahogany Coffee Table", amount: "LKR 89,000", payment: "Pending", fulfillment: "Vendor Approval", status: "Vendor Approval", date: "Jul 28, 2026", priority: "High" },
+  { id: "ORD-5521", customer: "Demo Customer 4", vendor: "Demo Woodworks", product: "Carved Gift Box", amount: "LKR 18,500", payment: "Refund Requested", fulfillment: "Customer Delivery", status: "Refund Review", date: "Jul 27, 2026", priority: "Urgent" },
 ];
 
 export const categorySeed = [
@@ -90,15 +90,15 @@ export const categorySeed = [
 ];
 
 export const paymentSeed = [
-  { id: "PAY-8824", orderId: "ORD-5524", customer: "Kasun Wijesinghe", vendor: "Perera Artisan Works", amount: "LKR 145,000", method: "Card", status: "Settled", payout: "Released", date: "Jul 30, 2026", risk: "Low" },
-  { id: "PAY-8823", orderId: "ORD-5523", customer: "Shani De Silva", vendor: "Heritage Furnishings", amount: "LKR 285,000", method: "Bank Transfer", status: "Authorized", payout: "Hold", date: "Jul 29, 2026", risk: "Medium" },
-  { id: "PAY-8822", orderId: "ORD-5522", customer: "Ranil Thilak", vendor: "Arpico Woodworks", amount: "LKR 89,000", method: "Card", status: "Pending", payout: "Not Ready", date: "Jul 28, 2026", risk: "Low" },
-  { id: "PAY-8821", orderId: "ORD-5521", customer: "Amara Jayawardena", vendor: "Perera Artisan Works", amount: "LKR 18,500", method: "Card", status: "Refund Requested", payout: "Blocked", date: "Jul 27, 2026", risk: "High" },
+  { id: "PAY-8824", orderId: "ORD-5524", customer: "Demo Customer", vendor: "Demo Woodworks", amount: "LKR 145,000", method: "Card", status: "Settled", payout: "Released", date: "Jul 30, 2026", risk: "Low" },
+  { id: "PAY-8823", orderId: "ORD-5523", customer: "Demo Customer 2", vendor: "Demo Furnishings", amount: "LKR 285,000", method: "Bank Transfer", status: "Authorized", payout: "Hold", date: "Jul 29, 2026", risk: "Medium" },
+  { id: "PAY-8822", orderId: "ORD-5522", customer: "Demo Customer 3", vendor: "Demo Woodworks 2", amount: "LKR 89,000", method: "Card", status: "Pending", payout: "Not Ready", date: "Jul 28, 2026", risk: "Low" },
+  { id: "PAY-8821", orderId: "ORD-5521", customer: "Demo Customer 4", vendor: "Demo Woodworks", amount: "LKR 18,500", method: "Card", status: "Refund Requested", payout: "Blocked", date: "Jul 27, 2026", risk: "High" },
 ];
 
 export const systemSettingsSeed = {
   platformName: "WoodVerse ERP",
-  supportEmail: "admin@woodverse.lk",
+  supportEmail: "admin@woodverse.example",
   defaultCurrency: "LKR",
   timezone: "Asia/Colombo",
   maintenanceMode: false,
@@ -116,10 +116,10 @@ export const systemSettingsSeed = {
 };
 
 export const adminProfileSeed = {
-  name: "WoodVerse Admin",
+  name: "Demo Admin",
   role: "Platform Administrator",
-  email: "admin@woodverse.lk",
-  phone: "+94 77 100 2000",
+  email: "admin@woodverse.example",
+  phone: "+94 77 000 0000",
   department: "Enterprise Operations",
   location: "Colombo, Sri Lanka",
   accessLevel: "Super Admin",
@@ -134,7 +134,7 @@ export const adminProfileSeed = {
 };
 
 export const activitySeed = [
-  { icon: Users, title: "New Vendor Registration: Arpico Woodworks", detail: "Verification pending documents.", time: "12 mins ago", tone: "text-[#104d3f]" },
+  { icon: Users, title: "New Vendor Registration: Demo Woodworks 2", detail: "Verification pending documents.", time: "12 mins ago", tone: "text-[#104d3f]" },
   { icon: CheckCircle2, title: "Product Approved: Teak Dining Table", detail: "Published to Marketplace by Vendor #1092.", time: "45 mins ago", tone: "text-[#2f7d56]" },
   { icon: ShoppingCart, title: "Order #ORD-5524 Completed", detail: "LKR 45,000 processed for delivery.", time: "2 hours ago", tone: "text-[#8b5633]" },
   { icon: AlertTriangle, title: "High Refund Request", detail: "Vendor 'Luxury Lofts' flagged for quality issues.", time: "5 hours ago", tone: "text-[#d24b53]" },

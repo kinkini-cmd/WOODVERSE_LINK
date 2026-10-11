@@ -152,8 +152,8 @@ export function SupplierSupportPage({ theme, onToggleTheme }) {
                   <h2 className="text-xl font-extrabold text-[#115745] dark:text-emerald-200">Contact Channels</h2>
                   <div className="mt-5 grid gap-3">
                     {[
-                      [Phone, "Call Operations", "+94 11 245 8800"],
-                      [Mail, "Email Support", "support@woodverse.lk"],
+                      [Phone, "Call Operations", "+94 11 000 0000"],
+                      [Mail, "Email Support", "support@woodverse.example"],
                       [Bell, "Urgent Alert", "Escalate active issue"],
                     ].map(([Icon, label, detail]) => (
                       <button key={label} onClick={() => setNotice(`${label}: ${detail}`)} className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-3 rounded-md border border-[#e2dfd7] bg-[#fbf8f1] p-3 text-left dark:border-white/10 dark:bg-[#202b28]">

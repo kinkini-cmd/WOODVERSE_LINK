@@ -69,8 +69,8 @@ describe("HomePage", () => {
         <HomePage addToCart={() => {}} />
       </BrowserRouter>
     );
-    expect(screen.getByText("hello@woodverse.lk")).toBeInTheDocument();
-    expect(screen.getByText("+94 11 245 8891")).toBeInTheDocument();
+    expect(screen.getByText("hello@woodverse.example")).toBeInTheDocument();
+    expect(screen.getByText("+94 11 000 0000")).toBeInTheDocument();
   });
 
   it("renders footer", () => {

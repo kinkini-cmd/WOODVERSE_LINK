@@ -11,10 +11,10 @@ export const devPassword = "WoodVerse@123";
 const DEV_PASSWORD_HASH = "$2b$10$v5Nj9WrEoUAcuME1fFOiuuJn188X0yTv1u/gbbWSlik/Yix2T38ey";
 
 export const devAccounts = [
-  { id: "d3c4b5a6-1111-4111-8111-111111111111", email: "customer@woodverse.lk", full_name: "Nimali Perera", role: "customer", status: "active" },
-  { id: "d3c4b5a6-2222-4222-8222-222222222222", email: "vendor@woodverse.lk", full_name: "Kasun Fernando", role: "vendor", status: "active" },
-  { id: "d3c4b5a6-3333-4333-8333-333333333333", email: "supplier@woodverse.lk", full_name: "Lumbini Timber Co.", role: "supplier", status: "active" },
-  { id: "d3c4b5a6-4444-4444-8444-444444444444", email: "admin@woodverse.lk", full_name: "Site Administrator", role: "admin", status: "active" },
+  { id: "d3c4b5a6-1111-4111-8111-111111111111", email: "customer@woodverse.example", full_name: "Demo Customer", role: "customer", status: "active" },
+  { id: "d3c4b5a6-2222-4222-8222-222222222222", email: "vendor@woodverse.example", full_name: "Demo Vendor", role: "vendor", status: "active" },
+  { id: "d3c4b5a6-3333-4333-8333-333333333333", email: "supplier@woodverse.example", full_name: "Demo Timber Co.", role: "supplier", status: "active" },
+  { id: "d3c4b5a6-4444-4444-8444-444444444444", email: "admin@woodverse.example", full_name: "Site Administrator", role: "admin", status: "active" },
 ].map((user) => ({ ...user, password_hash: DEV_PASSWORD_HASH }));
 
 export const catalogProducts = [

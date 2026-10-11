@@ -21,16 +21,16 @@ import { SettingsInput, SettingsSelect } from "./shared";
 
 export function VendorProfilePage() {
   const defaultProfile = {
-    businessName: "Perera Artisan Works",
-    ownerName: "Aruni Perera",
+    businessName: "Demo Woodworks",
+    ownerName: "Demo Vendor",
     role: "Master Artisan",
-    email: "aruni@pereraartisan.lk",
-    phone: "+94 77 412 8890",
+    email: "vendor@woodverse.example",
+    phone: "+94 77 000 0000",
     location: "Moratuwa, Sri Lanka",
-    workshopAddress: "42 Timber Craft Lane, Moratuwa",
+    workshopAddress: "123 Workshop Lane, Moratuwa",
     businessType: "Furniture Manufacturer",
-    taxId: "VAT-LK-104882",
-    publicSlug: "perera-artisan-works",
+    taxId: "VAT-LK-000000",
+    publicSlug: "demo-woodworks",
     yearsActive: "12",
     teamSize: "24",
     specialty: "Custom teak, walnut, and mahogany furniture",

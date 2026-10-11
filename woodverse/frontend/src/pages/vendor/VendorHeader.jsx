@@ -26,10 +26,10 @@ export function VendorHeader({ onAction, onNotifications, unreadCount, status })
         <button onClick={() => navigate("/vendor/help")} className="grid h-10 w-10 shrink-0 place-items-center rounded-full transition hover:bg-[#eeeae4]" aria-label="Help"><HelpCircle className="h-5 w-5" /></button>
         <span className="hidden h-8 w-px shrink-0 bg-[#d4d1ca] sm:block" />
         <div className="hidden min-w-0 text-right sm:block">
-          <strong className="block truncate leading-tight text-[#202621]">Aruni Perera</strong>
+          <strong className="block truncate leading-tight text-[#202621]">Demo Vendor</strong>
           <span className="block text-xs font-bold uppercase tracking-wide text-[#68716c]">Master Artisan</span>
         </div>
-        <button onClick={() => navigate("/vendor/profile")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full border-2 border-[#115745] bg-[#d8c0a4] font-extrabold text-[#115745]" aria-label="Vendor profile">AP</button>
+        <button onClick={() => navigate("/vendor/profile")} className="grid h-11 w-11 shrink-0 place-items-center rounded-full border-2 border-[#115745] bg-[#d8c0a4] font-extrabold text-[#115745]" aria-label="Vendor profile">DV</button>
       </div>
     </header>
   );

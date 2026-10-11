@@ -57,9 +57,9 @@ function buildInvoice(order, customer) {
 
 export function ProfilePage({ isLoggedIn, role, onLogout }) {
   const defaultProfile = {
-    fullName: "WoodVerse Customer",
-    email: "customer@woodverse.lk",
-    phone: "+94 77 245 9012",
+    fullName: "Demo Customer",
+    email: "customer@woodverse.example",
+    phone: "+94 77 000 0000",
     city: "Colombo, Sri Lanka",
     notes: "Call before delivery. Prefer weekend drop-offs.",
   };
@@ -94,19 +94,19 @@ export function ProfilePage({ isLoggedIn, role, onLogout }) {
       id: "home",
       label: "Home",
       status: "Default",
-      name: "WoodVerse Customer",
-      line: "42 Lake View Road, Colombo 05",
+      name: "Demo Customer",
+      line: "123 Demo Road, Colombo 05",
       details: "Colombo, Western Province 00500",
-      phone: "+94 77 245 9012",
+      phone: "+94 77 000 0000",
     },
     {
       id: "workshop",
       label: "Workshop",
       status: "Backup",
       name: "Urban Log Studio",
-      line: "18 Timber Lane, Moratuwa",
+      line: "456 Demo Lane, Moratuwa",
       details: "Moratuwa, Western Province 10400",
-      phone: "+94 71 882 4410",
+      phone: "+94 71 000 0001",
     },
   ]);
 
@@ -524,9 +524,9 @@ export function ProfileField({ label, name, defaultValue, type = "text", icon: I
 
 export function getStoredCustomerProfile() {
   try {
-    return JSON.parse(localStorage.getItem("woodverse-profile-info")) || { fullName: "WoodVerse Customer" };
+    return JSON.parse(localStorage.getItem("woodverse-profile-info")) || { fullName: "Demo Customer" };
   } catch {
-    return { fullName: "WoodVerse Customer" };
+    return { fullName: "Demo Customer" };
   }
 }
 

@@ -69,7 +69,7 @@ export const SUPPLIER_TRANSLATIONS = {
     "Require verification for payout and profile changes.": "ගෙවීම් සහ පැතිකඩ වෙනස්කම් සඳහා සත්‍යාපනය අවශ්‍ය කරන්න.",
     "Send Password Reset": "මුරපද නැවත සැකසීම යවන්න",
     "Sign Out Other Sessions": "අනෙකුත් සැසිවලින් ඉවත් කරන්න",
-    "Password reset link sent to operations@lumbinitimber.lk.": "මුරපද නැවත සැකසුම් සබැඳිය operations@lumbinitimber.lk වෙත යවන ලදී.",
+    "Password reset link sent to supplier@woodverse.example.": "මුරපද නැවත සැකසුම් සබැඳිය supplier@woodverse.example වෙත යවන ලදී.",
     "All other supplier sessions signed out.": "අනෙකුත් සියලු සැපයුම්කරු සැසි ඉවත් කරන ලදී.",
     "API Access": "API ප්‍රවේශය",
     "Socket URL": "Socket URL",

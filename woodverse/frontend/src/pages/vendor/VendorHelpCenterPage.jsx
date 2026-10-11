@@ -80,8 +80,8 @@ export function VendorHelpCenterPage() {
 
   const submitEmailAdmin = (form) => {
     const subject = form.subject || "Vendor portal support request";
-    const body = `${form.message}\n\nVendor: Perera Artisan Works\nContact: Aruni Perera\nCategory: ${form.category}`;
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent("admin@woodverse.lk")}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const body = `${form.message}\n\nVendor: Demo Woodworks\nContact: Demo Vendor\nCategory: ${form.category}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent("admin@woodverse.example")}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(gmailUrl, "_blank", "noopener,noreferrer");
     const nextId = addSupportRecord({ subject, type: form.category, priority: "Medium", message: form.message, status: "Gmail Draft" });
     setActiveContact(null);
@@ -336,7 +336,7 @@ export function EmailAdminModal({ onClose, onSubmit }) {
 
 export function RequestCallModal({ onClose, onSubmit }) {
   const [form, setForm] = useState({
-    phone: "+94 77 412 8890",
+    phone: "+94 77 000 0000",
     topic: "Notification setup",
     preferredTime: "Today 3:00 PM - 5:00 PM",
   });

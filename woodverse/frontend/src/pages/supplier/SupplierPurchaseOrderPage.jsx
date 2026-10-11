@@ -46,7 +46,7 @@ export function SupplierPurchaseOrderPage({ theme, onToggleTheme }) {
     setNotes((items) => [
       ...items,
       {
-        author: "John Doe (Logistics Mgr)",
+        author: "Demo Manager (Logistics Mgr)",
         time: "Just now",
         text: noteInput.trim(),
       },
@@ -219,9 +219,9 @@ export function SupplierPurchaseOrderPage({ theme, onToggleTheme }) {
                     </div>
                   </div>
                   <div className="mt-5 grid gap-3 border-t border-[#dedbd3] pt-5 text-sm dark:border-white/10">
-                    <ContactRow icon={UserRound} text="Amara Silva (Procurement)" />
-                    <ContactRow icon={Mail} text="amara@silvawoodworks.lk" />
-                    <ContactRow icon={Phone} text="+94 11 234 5678" />
+                    <ContactRow icon={UserRound} text="Demo User (Procurement)" />
+                    <ContactRow icon={Mail} text="user@woodverse.example" />
+                    <ContactRow icon={Phone} text="+94 11 000 0001" />
                   </div>
                 </OrderSideCard>
 

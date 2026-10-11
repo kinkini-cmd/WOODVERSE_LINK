@@ -27,9 +27,9 @@ export function SupplierDashboardPage({ theme, onToggleTheme }) {
   const [showDeliveryCalendar, setShowDeliveryCalendar] = useState(false);
   const [selectedDeliveryDay, setSelectedDeliveryDay] = useState(null);
   const deliveries = [
-    { date: "Oct 25, 09:00", customer: "Arpico Interiors", material: "Mahogany", badge: "bg-[#cfe6c7] text-[#28513c]", volume: "450 m3" },
-    { date: "Oct 25, 14:30", customer: "Ceylinco Homes", material: "Satinwood", badge: "bg-[#bfe9dc] text-[#195b4b]", volume: "120 m3" },
-    { date: "Oct 26, 11:00", customer: "Royal Furniture", material: "Teak Grade-A", badge: "bg-[#ffd8bd] text-[#87512f]", volume: "2,100 m3" },
+    { date: "Oct 25, 09:00", customer: "Demo Interiors", material: "Mahogany", badge: "bg-[#cfe6c7] text-[#28513c]", volume: "450 m3" },
+    { date: "Oct 25, 14:30", customer: "Demo Homes", material: "Satinwood", badge: "bg-[#bfe9dc] text-[#195b4b]", volume: "120 m3" },
+    { date: "Oct 26, 11:00", customer: "Demo Furniture", material: "Teak Grade-A", badge: "bg-[#ffd8bd] text-[#87512f]", volume: "2,100 m3" },
   ];
   const visibleDeliveries = selectedDeliveryDay ? deliveries.filter((delivery) => getCalendarDay(delivery.date) === selectedDeliveryDay) : deliveries;
   const incomingNotifications = getStoredSupplierNotifications().slice(0, 3).map((item) => ({
@@ -76,7 +76,7 @@ export function SupplierDashboardPage({ theme, onToggleTheme }) {
               </button>
               <span className="hidden h-8 w-px bg-[#cfd4cf] dark:bg-white/10 sm:block" />
               <div className="hidden text-right sm:block">
-                <p className="font-extrabold leading-tight text-[#222621] dark:text-stone-100">Lumbini Timber Co.</p>
+                <p className="font-extrabold leading-tight text-[#222621] dark:text-stone-100">Demo Timber Co.</p>
                 <p className="text-sm text-[#5d675f] dark:text-stone-400">Verified Supplier</p>
               </div>
               <div className="grid h-11 w-11 place-items-center rounded-full border-2 border-[#b8c7bd] bg-[linear-gradient(135deg,#f2d3ba,#7b4a30)] text-sm font-extrabold text-white dark:border-emerald-200/40">
@@ -88,7 +88,7 @@ export function SupplierDashboardPage({ theme, onToggleTheme }) {
           <div className="mx-auto grid max-w-[1040px] gap-8 px-6 py-9 xl:px-10">
             <div className="flex min-w-0 items-start justify-between gap-5 max-md:grid">
               <div className="min-w-0">
-                <p className="text-lg text-[#2f6757] dark:text-emerald-200">Good morning, Lumbini Timber</p>
+                <p className="text-lg text-[#2f6757] dark:text-emerald-200">Good morning, Demo Timber</p>
                 <h1 className="mt-1 break-words text-xl leading-snug text-[#39433f] dark:text-stone-200">Here's your operational overview for today, October 24th.</h1>
               </div>
               <div className="flex flex-wrap gap-3">

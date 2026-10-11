@@ -36,40 +36,40 @@ export function SupplierVendorsPage({ theme, onToggleTheme }) {
   const [materialFilter, setMaterialFilter] = useState("All Timber & Hardware");
   const vendorsList = [
     {
-      name: "Lanka Teak Estates",
+      name: "Demo Teak Estates",
       location: "Colombo, LK",
-      email: "saman.p@lankateak.lk",
-      phone: "+94 11 234 5678",
+      email: "contact1@woodverse.example",
+      phone: "+94 11 000 0002",
       materials: ["Teak", "Mahogany", "Nedun"],
       status: "Preferred",
       statusClass: "bg-[#3f835d] text-white",
       initials: "LT",
     },
     {
-      name: "Heritage Brassworks",
+      name: "Demo Brassworks",
       location: "Moratuwa, LK",
-      email: "orders@heritagebrass.com",
-      phone: "+94 11 888 2233",
+      email: "contact2@woodverse.example",
+      phone: "+94 11 000 0003",
       materials: ["Brass Hardware", "Copper Inlays"],
       status: "Active",
       statusClass: "bg-emerald-100 text-[#115745] dark:bg-emerald-950/40 dark:text-emerald-200",
       initials: "HB",
     },
     {
-      name: "EcoGloss Finishes",
+      name: "Demo Finishes",
       location: "Kandy, LK",
-      email: "hello@ecogloss.com",
-      phone: "+94 81 555 4444",
+      email: "contact3@woodverse.example",
+      phone: "+94 81 000 0004",
       materials: ["Varnish", "Natural Oils"],
       status: "Inactive",
       statusClass: "bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200",
       initials: "EG",
     },
     {
-      name: "Royal Jackwood Supplies",
+      name: "Demo Supplies",
       location: "Galle, LK",
-      email: "contact@royaljackwood.lk",
-      phone: "+94 91 111 2222",
+      email: "contact4@woodverse.example",
+      phone: "+94 91 000 0005",
       materials: ["Jack Wood", "Mara Wood"],
       status: "Preferred",
       statusClass: "bg-[#3f835d] text-white",
@@ -99,7 +99,7 @@ export function SupplierVendorsPage({ theme, onToggleTheme }) {
 
     const handleConnect = () => {
       setSocketStatus("Connected");
-      socket.emit("vendor:join", { room: "supplier-vendor-messages", supplier: "Lumbini Timber Co." });
+      socket.emit("vendor:join", { room: "supplier-vendor-messages", supplier: "Demo Timber Co." });
     };
     const handleDisconnect = () => setSocketStatus("Offline");
     const handleConnectError = () => setSocketStatus("Offline");
@@ -140,7 +140,7 @@ export function SupplierVendorsPage({ theme, onToggleTheme }) {
     setActiveMessageVendor(vendor);
     setMessageDraft("");
     setNotice(`Socket.IO message thread opened for ${vendor.name}.`);
-    socketClient?.emit("vendor:thread:open", { vendor: vendor.name, supplier: "Lumbini Timber Co." });
+    socketClient?.emit("vendor:thread:open", { vendor: vendor.name, supplier: "Demo Timber Co." });
   };
 
   const sendVendorMessage = (event) => {
@@ -162,7 +162,7 @@ export function SupplierVendorsPage({ theme, onToggleTheme }) {
     }));
     socketClient?.emit("vendor:message:send", {
       room: "supplier-vendor-messages",
-      supplier: "Lumbini Timber Co.",
+      supplier: "Demo Timber Co.",
       vendor: activeMessageVendor.name,
       text,
       sentAt: new Date().toISOString(),
@@ -213,7 +213,7 @@ export function SupplierVendorsPage({ theme, onToggleTheme }) {
     }));
     socketClient?.emit("vendor:message:send", {
       room: "supplier-vendor-messages",
-      supplier: "Lumbini Timber Co.",
+      supplier: "Demo Timber Co.",
       vendor: activePoVendor.name,
       text: `${po.id} purchase order draft created for ${po.material}.`,
       sentAt: new Date().toISOString(),
@@ -640,7 +640,7 @@ export const VENDOR_MESSAGE_SEEDS = {
   "Heritage Brassworks": [
     { id: "hb-1", sender: "vendor", text: "Copper inlay samples can ship with the next hardware batch.", time: "10:15 AM" },
   ],
-  "EcoGloss Finishes": [
+  "Demo Finishes": [
     { id: "eg-1", sender: "vendor", text: "We are updating compliance documents before accepting new orders.", time: "Yesterday" },
   ],
   "Royal Jackwood Supplies": [

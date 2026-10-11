@@ -29,7 +29,7 @@ export function VendorShipmentsPage() {
   const [draft, setDraft] = useState({
     type: "Customer Delivery",
     reference: "#WV-9482",
-    contact: "Kasun Wijesinghe",
+    contact: "Demo Customer 3",
     destination: "Colombo 07",
     carrier: "Lanka Freight",
     date: "2026-08-04",

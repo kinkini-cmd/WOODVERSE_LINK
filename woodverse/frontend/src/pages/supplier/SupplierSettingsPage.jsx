@@ -72,7 +72,7 @@ export function SupplierSettingsPage({ theme, onToggleTheme }) {
 
   const sendPasswordReset = () => {
     setPasswordResetSent(true);
-    setNotice(t("Password reset link sent to operations@lumbinitimber.lk."));
+    setNotice(t("Password reset link sent to supplier@woodverse.example."));
   };
 
   const signOutOtherSessions = () => {

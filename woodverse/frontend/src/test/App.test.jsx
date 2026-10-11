@@ -35,10 +35,10 @@ function signInAdmin() {
   const encode = (value) => btoa(JSON.stringify(value)).replace(/=+$/, "");
   const token = [
     encode({ alg: "HS256", typ: "JWT" }),
-    encode({ id: "33333333-3333-4333-8333-333333333333", role: "admin", email: "admin@woodverse.lk", exp: Math.floor(Date.now() / 1000) + 3600 }),
+    encode({ id: "33333333-3333-4333-8333-333333333333", role: "admin", email: "admin@woodverse.example", exp: Math.floor(Date.now() / 1000) + 3600 }),
     "signature",
   ].join(".");
-  storeAuth({ token, user: { id: "33333333-3333-4333-8333-333333333333", role: "admin", email: "admin@woodverse.lk" } });
+  storeAuth({ token, user: { id: "33333333-3333-4333-8333-333333333333", role: "admin", email: "admin@woodverse.example" } });
   return token;
 }
 
@@ -47,10 +47,10 @@ function signInSupplier() {
   const encode = (value) => btoa(JSON.stringify(value)).replace(/=+$/, "");
   const token = [
     encode({ alg: "HS256", typ: "JWT" }),
-    encode({ id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@lumbinitimber.lk", exp: Math.floor(Date.now() / 1000) + 3600 }),
+    encode({ id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@woodverse.example", exp: Math.floor(Date.now() / 1000) + 3600 }),
     "signature",
   ].join(".");
-  storeAuth({ token, user: { id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@lumbinitimber.lk" } });
+  storeAuth({ token, user: { id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@woodverse.example" } });
   return token;
 }
 
@@ -366,7 +366,7 @@ describe("Supplier portal routes", () => {
     const encode = (value) => btoa(JSON.stringify(value)).replace(/=+$/, "");
     const token = [
       encode({ alg: "HS256", typ: "JWT" }),
-      encode({ id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@lumbinitimber.lk", exp: Math.floor(Date.now() / 1000) + 3600 }),
+      encode({ id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@woodverse.example", exp: Math.floor(Date.now() / 1000) + 3600 }),
       "signature",
     ].join(".");
 
@@ -375,7 +375,7 @@ describe("Supplier portal routes", () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
       const url = String(input);
       if (url.includes("/api/auth/login")) {
-        return new Response(JSON.stringify({ token, user: { id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@lumbinitimber.lk" } }), {
+        return new Response(JSON.stringify({ token, user: { id: "22222222-2222-4222-8222-222222222222", role: "supplier", email: "ops@woodverse.example" } }), {
           status: 200,
           headers: { "content-type": "application/json" },
         });
@@ -393,9 +393,9 @@ describe("Supplier portal routes", () => {
       expect(screen.getByText("Welcome Back")).toBeInTheDocument();
     });
 
-    await userEvent.type(screen.getByLabelText("Email Address"), "ops@lumbinitimber.lk");
+    await userEvent.type(screen.getByLabelText("Email Address"), "ops@woodverse.example");
     // Exact, because the reveal toggle is labelled "Show password".
-    await userEvent.type(screen.getByLabelText("Password", { exact: true }), "Supplier@123");
+    await userEvent.type(screen.getByLabelText("Password", { exact: true }), "TestPass123");
     await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {

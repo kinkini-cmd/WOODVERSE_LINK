@@ -16,16 +16,16 @@ describe("SupplierVendorsPage filters", () => {
 
   it("narrows the directory by supplier status", () => {
     render(<SupplierVendorsPage {...themeProps} />);
-    expect(screen.getByRole("heading", { name: "Lanka Teak Estates" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "EcoGloss Finishes" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo Teak Estates" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo Finishes" })).toBeInTheDocument();
 
-    // EcoGloss is the only Inactive supplier, so it drops out under Preferred.
+    // Demo Finishes is the only Inactive supplier, so it drops out under Preferred.
     fireEvent.click(screen.getByRole("button", { name: "Preferred" }));
-    expect(screen.queryByRole("heading", { name: "EcoGloss Finishes" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Lanka Teak Estates" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Demo Finishes" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo Teak Estates" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "All" }));
-    expect(screen.getByRole("heading", { name: "EcoGloss Finishes" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo Finishes" })).toBeInTheDocument();
   });
 
   it("narrows the directory by material", () => {
@@ -33,8 +33,8 @@ describe("SupplierVendorsPage filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "All Timber & Hardware" }));
     fireEvent.click(screen.getByRole("option", { name: "Varnish" }));
 
-    expect(screen.getByRole("heading", { name: "EcoGloss Finishes" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Lanka Teak Estates" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo Finishes" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Demo Teak Estates" })).not.toBeInTheDocument();
   });
 
   it("shows the selected material on the trigger and closes the list", () => {
