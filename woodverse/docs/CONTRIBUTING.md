@@ -1,62 +1,95 @@
-# Contributing
+# Contributing to WoodVerse
 
-## Document Information
+## Prerequisites
 
-- Project: WoodVerse
-- Status: Draft
-- Version: 1.0
-- Last Updated: To be updated
-- Owner: WoodVerse Development Team
+- Node.js 18+
+- npm 9+
+- Python 3.11+
+- PostgreSQL 14+ (optional — app runs in demo mode without a DB)
 
-## Project Context
+## Setup
 
-WoodVerse is an AI-assisted multi-vendor web platform for furniture,
-wooden products, wooden gifts, standard laser-cut files, indoor plants,
-custom furniture, supplier management, inventory, production tracking,
-payments, shipments, support, and administration.
+```bash
+cd woodverse
+npm install
+```
 
-Main roles:
+For the AI service Python environment:
 
-- Customer
-- Vendor
-- Supplier
-- Admin
+```bash
+cd woodverse
+python3 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r backend/ai-service/requirements.txt
+```
 
-Technology stack:
+## Development
 
-- React.js
-- Tailwind CSS
-- Node.js
-- Express.js
-- PostgreSQL
-- Python
-- FastAPI
-- Scikit-learn
-- OpenCV
-- MiDaS / DPT
-- Socket.IO
+Start all services (frontend + API + AI service):
 
+```bash
+npm run dev
+```
 
-## Purpose
+Or individually:
 
-Describe the goals, scope, requirements, workflows, implementation notes, and
-acceptance criteria for this WoodVerse area.
+```bash
+npm run dev:web     # Frontend on http://localhost:5173
+npm run dev:api    # API on http://localhost:4000
+npm run dev:ai     # AI service on http://localhost:8000
+```
 
-## Scope
+## Environment Variables
 
-- Background
-- Requirements
-- User roles
-- Screens
-- APIs
-- Data model
-- Security
-- Testing
-- Open questions
+Copy `backend/api/.env.example` to `backend/api/.env` and set at minimum:
+- `JWT_SECRET` — any random 32+ character string
+- `DATABASE_URL` — PostgreSQL connection string (optional for demo mode)
 
-## Status
+## Testing
 
-- [ ] Draft
-- [ ] Reviewed
-- [ ] Approved
-- [ ] Implemented
+```bash
+# All tests (frontend + API)
+npm test
+
+# Frontend tests only
+npm run test:frontend
+
+# API tests only (requires TEST_DATABASE_URL for integration assertions)
+npm run test:api
+
+# AI service tests (requires TEST_DATABASE_URL for integration assertions)
+npm run test:ai
+
+# Integration tests (requires running DB and services)
+npm run test:checkout:e2e
+npm run test:ai:e2e
+```
+
+Integration tests require a PostgreSQL database:
+
+```bash
+export TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/woodverse_test
+npm run test:api
+```
+
+## Database
+
+Run migrations (requires DATABASE_URL in environment):
+
+```bash
+npm run migrate --workspace=backend/api
+```
+
+Seed development data:
+
+```bash
+psql $DATABASE_URL < database/seed.sql
+```
+
+All seeded accounts use password: `password123`
+
+## Build
+
+```bash
+npm run build  # builds the frontend
+```

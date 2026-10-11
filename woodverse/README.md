@@ -19,6 +19,10 @@ The implemented platform roles are limited to four server-authorized roles:
 - Supplier
 - Admin
 
+## Prototype Status
+
+> **Note:** The vendor portal, supplier portal, and admin console are currently prototype UI. Their dashboards use in-memory mock data and do not persist to the backend database. Only the following flows are fully integrated with the backend: customer auth, product catalog, order placement, quotations, messages, and AI chat.
+
 ## Tech Stack
 
 - React.js
@@ -29,8 +33,7 @@ The implemented platform roles are limited to four server-authorized roles:
 - Python
 - FastAPI
 - Scikit-learn
-- OpenCV
-- MiDaS / DPT
+- OpenCV (disabled — endpoints pending implementation)
 - Socket.IO
 
 ## Repository Structure
@@ -122,6 +125,19 @@ npm run build
 ```
 
 The root build script currently compiles the frontend application.
+
+## Testing
+
+```bash
+# Run all tests (frontend + API)
+npm test
+
+# Run AI service tests
+npm run test:ai
+
+# Seed the database
+psql $DATABASE_URL < database/seed.sql
+```
 
 ## Additional Notes
 
