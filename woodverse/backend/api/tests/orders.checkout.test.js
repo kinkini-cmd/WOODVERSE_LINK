@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import pg from "pg";
 import request from "node:http";
 
+// Run with: TEST_DATABASE_URL=<your-postgres-url> npm test
 const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL || "";
 
 // src/utils/auth.js and src/db.js read these at import time, so they must be set
@@ -92,7 +93,9 @@ const otherCustomerToken = () => tokenFor(CUSTOMER_B, "customer", "b@example.com
 // a describe's afterAll as soon as that block finishes, so a block-scoped afterAll
 // would close the server and pool before the later suites below ever ran.
 beforeAll(async () => {
-  if (!TEST_DATABASE_URL) return;
+  if (!TEST_DATABASE_URL) {
+    throw new Error('TEST_DATABASE_URL must be set to run integration tests. Run with: TEST_DATABASE_URL=<url> npm test');
+  }
   await pool.query("TRUNCATE orders, products, vendors, users RESTART IDENTITY CASCADE");
   await pool.query(
     `INSERT INTO users (id, email, full_name, role, password_hash, status) VALUES
@@ -125,13 +128,11 @@ afterAll(async () => {
 
 describe("POST /api/orders", () => {
   it("requires authentication", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", { body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 1 }] } });
     expect(res.status).toBe(401);
   });
 
   it("writes a row owned by the token holder", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 2 }] },
       token: customerToken(),
@@ -144,7 +145,6 @@ describe("POST /api/orders", () => {
   });
 
   it("ignores a client supplied customerId", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: {
         items: [{ id: IN_STOCK_PRODUCT, quantity: 1 }],
@@ -161,7 +161,6 @@ describe("POST /api/orders", () => {
   });
 
   it("ignores a client supplied totalAmount and prices from the products table", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 1 }], totalAmount: 1 },
       token: customerToken(),
@@ -174,7 +173,6 @@ describe("POST /api/orders", () => {
   });
 
   it("ignores a client supplied price on a line item", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 1, price: 1, name: "Free", vendor: "Attacker" }] },
       token: customerToken(),
@@ -188,7 +186,6 @@ describe("POST /api/orders", () => {
   });
 
   it("marks an out of stock line as requiring manufacturing", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: OUT_OF_STOCK_PRODUCT, quantity: 1 }] },
       token: customerToken(),
@@ -201,7 +198,6 @@ describe("POST /api/orders", () => {
   });
 
   it("keeps a stock order out of manufacturing", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 1 }] },
       token: customerToken(),
@@ -212,13 +208,11 @@ describe("POST /api/orders", () => {
   });
 
   it("rejects an order with no items", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", { body: { items: [] }, token: customerToken() });
     expect(res.status).toBe(400);
   });
 
   it("rejects a non uuid product id", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: "1; DROP TABLE orders", quantity: 1 }] },
       token: customerToken(),
@@ -227,7 +221,6 @@ describe("POST /api/orders", () => {
   });
 
   it("rejects a fractional or negative quantity", async () => {
-    if (!TEST_DATABASE_URL) return;
     for (const quantity of [0, -1, 1.5, "two"]) {
       const res = await send("POST", "/api/orders", {
         body: { items: [{ id: IN_STOCK_PRODUCT, quantity }] },
@@ -238,7 +231,6 @@ describe("POST /api/orders", () => {
   });
 
   it("rejects a product that does not exist", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: "00000000-0000-4000-8000-000000009999", quantity: 1 }] },
       token: customerToken(),
@@ -247,7 +239,6 @@ describe("POST /api/orders", () => {
   });
 
   it("merges duplicate lines instead of double counting them", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/orders", {
       body: { items: [{ id: IN_STOCK_PRODUCT, quantity: 1 }, { id: IN_STOCK_PRODUCT, quantity: 2 }] },
       token: customerToken(),
@@ -260,7 +251,6 @@ describe("POST /api/orders", () => {
   });
 
   it("returns the error to the caller instead of a fake success", async () => {
-    if (!TEST_DATABASE_URL) return;
     const before = (await pool.query("SELECT count(*)::int AS count FROM orders")).rows[0].count;
     const res = await send("POST", "/api/orders", { body: { items: "nope" }, token: customerToken() });
     const after = (await pool.query("SELECT count(*)::int AS count FROM orders")).rows[0].count;
@@ -271,7 +261,6 @@ describe("POST /api/orders", () => {
 
 describe("GET /api/orders", () => {
   it("returns only the caller's orders to a customer", async () => {
-    if (!TEST_DATABASE_URL) return;
     const mine = await send("GET", "/api/orders", { token: customerToken() });
     const theirs = await send("GET", "/api/orders", { token: otherCustomerToken() });
 
@@ -282,7 +271,6 @@ describe("GET /api/orders", () => {
   });
 
   it("includes the customer name for the vendor view", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("GET", "/api/orders", { token: tokenFor(VENDOR_USER, "vendor", "vendor@example.com") });
     expect(res.status).toBe(200);
     expect(res.body.orders.length).toBeGreaterThan(0);
@@ -290,7 +278,6 @@ describe("GET /api/orders", () => {
   });
 
   it("requires authentication", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("GET", "/api/orders");
     expect(res.status).toBe(401);
   });
@@ -298,7 +285,6 @@ describe("GET /api/orders", () => {
 
 describe("POST /api/users", () => {
   it("rejects an unauthenticated request", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/users", {
       body: { email: "attacker@example.com", fullName: "Attacker", role: "admin", password: "password123" },
     });
@@ -309,7 +295,6 @@ describe("POST /api/users", () => {
   });
 
   it("rejects a non admin caller", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/users", {
       body: { email: "attacker2@example.com", fullName: "Attacker", role: "admin", password: "password123" },
       token: customerToken(),
@@ -321,7 +306,6 @@ describe("POST /api/users", () => {
   });
 
   it("still allows an admin to create a user", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/users", {
       body: { email: "newvendor@example.com", fullName: "New Vendor", role: "vendor", password: "password123" },
       token: tokenFor(ADMIN, "admin", "admin@example.com"),
@@ -335,7 +319,6 @@ describe("POST /api/users", () => {
 
 describe("POST /api/auth/register", () => {
   it("refuses to create an admin", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/register", {
       body: { email: "sneaky-admin@example.com", fullName: "Sneaky", role: "admin", password: "password123" },
     });
@@ -346,7 +329,6 @@ describe("POST /api/auth/register", () => {
   });
 
   it("creates an active customer", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/register", {
       body: { email: "newcustomer@example.com", fullName: "New Customer", password: "password123" },
     });
@@ -357,7 +339,6 @@ describe("POST /api/auth/register", () => {
   });
 
   it("creates a vendor as pending and attaches a vendor row", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/register", {
       body: { email: "newbiz@example.com", fullName: "New Biz", role: "vendor", businessName: "New Biz Ltd", password: "password123" },
     });
@@ -370,7 +351,6 @@ describe("POST /api/auth/register", () => {
   });
 
   it("rejects a short password", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/register", {
       body: { email: "short@example.com", fullName: "Short", password: "abc" },
     });
@@ -380,7 +360,6 @@ describe("POST /api/auth/register", () => {
 
 describe("POST /api/vendors", () => {
   it("ignores a client supplied userId for a vendor user", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/vendors", {
       body: { userId: CUSTOMER_A, businessName: "Stolen Vendor" },
       token: tokenFor(VENDOR_USER, "vendor", "vendor@example.com"),
@@ -391,7 +370,6 @@ describe("POST /api/vendors", () => {
 
 describe("POST /api/quotations", () => {
   it("rejects a vendor that supplies another vendorId", async () => {
-    if (!TEST_DATABASE_URL) return;
     const order = await pool.query(
       "INSERT INTO orders (customer_id, vendor_id, status, total_amount, requires_manufacturing, fulfillment_plan, shipping_address) VALUES ($1, $2, 'processing', 1000, false, '[]'::jsonb, '{}'::jsonb) RETURNING *",
       [CUSTOMER_A, VENDOR_ID]
@@ -408,7 +386,6 @@ describe("POST /api/quotations", () => {
 
 describe("POST /api/auth/register", () => {
   it("keeps supplier registration from creating a vendor profile", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/register", {
       body: { email: "newsupplier@example.com", fullName: "New Supplier", role: "supplier", businessName: "Supplier Co.", password: "password123" },
     });
@@ -423,7 +400,6 @@ describe("POST /api/auth/register", () => {
 
 describe("POST /api/auth/login", () => {
   it("rejects a wrong password with 401 and no token", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/login", {
       body: { email: "a@example.com", password: "wrong-password" },
     });
@@ -432,7 +408,6 @@ describe("POST /api/auth/login", () => {
   });
 
   it("blocks a pending business account", async () => {
-    if (!TEST_DATABASE_URL) return;
     await pool.query("UPDATE users SET status = 'pending_approval' WHERE email = 'newbiz@example.com'");
     const res = await send("POST", "/api/auth/login", {
       body: { email: "newbiz@example.com", password: "password123" },
@@ -442,7 +417,6 @@ describe("POST /api/auth/login", () => {
   });
 
   it("blocks a suspended account", async () => {
-    if (!TEST_DATABASE_URL) return;
     await pool.query("UPDATE users SET status = 'suspended' WHERE email = 'newcustomer@example.com'");
     const res = await send("POST", "/api/auth/login", {
       body: { email: "newcustomer@example.com", password: "password123" },
@@ -451,7 +425,6 @@ describe("POST /api/auth/login", () => {
   });
 
   it("does not reveal that a password is wrong for a suspended account", async () => {
-    if (!TEST_DATABASE_URL) return;
     // Status is only reported after the password check, so a wrong password on a
     // suspended account still reads as a plain 401 rather than leaking account state.
     const res = await send("POST", "/api/auth/login", {
@@ -461,7 +434,6 @@ describe("POST /api/auth/login", () => {
   });
 
   it("issues a token for a good password", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await send("POST", "/api/auth/login", {
       body: { email: "a@example.com", password: "password123" },
     });

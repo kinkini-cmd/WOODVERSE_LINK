@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import pg from "pg";
 import request from "node:http";
 
+// Run with: TEST_DATABASE_URL=<your-postgres-url> npm test
 const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL || "";
 
 // src/utils/auth.js and src/db.js read these at import time, so they must be set
@@ -85,7 +86,9 @@ function post(path, body, token) {
 
 describe("ai route: identity handling", () => {
   beforeAll(async () => {
-    if (!TEST_DATABASE_URL) return;
+    if (!TEST_DATABASE_URL) {
+      throw new Error('TEST_DATABASE_URL must be set to run integration tests. Run with: TEST_DATABASE_URL=<url> npm test');
+    }
     await pool.query("TRUNCATE orders, vendors, users RESTART IDENTITY CASCADE");
     await pool.query(
       `INSERT INTO users (id, email, full_name, role) VALUES
@@ -113,19 +116,16 @@ describe("ai route: identity handling", () => {
   });
 
   it("rejects a request with no token", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await post("/api/ai/chat", { message: "where is my order" });
     expect(res.status).toBe(401);
   });
 
   it("rejects a malformed token", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await post("/api/ai/chat", { message: "where is my order" }, "not-a-jwt");
     expect(res.status).toBe(401);
   });
 
   it("overwrites a client supplied actorId so one customer cannot read another's orders", async () => {
-    if (!TEST_DATABASE_URL) return;
 
     // The AI service is stubbed out, so this asserts the payload that would be sent.
     const aiCalls = [];
@@ -158,7 +158,6 @@ describe("ai route: identity handling", () => {
   });
 
   it("scopes GET /api/ai/orders to the caller's own rows", async () => {
-    if (!TEST_DATABASE_URL) return;
     const getRes = await new Promise((resolve, reject) => {
       const req = request.request(`${baseUrl}/api/ai/orders`, {
         headers: { authorization: `Bearer ${tokenFor(CUSTOMER_A, "customer", "a@example.com")}` },
@@ -178,7 +177,6 @@ describe("ai route: identity handling", () => {
   });
 
   it("requires a token for GET /api/ai/orders", async () => {
-    if (!TEST_DATABASE_URL) return;
     const res = await new Promise((resolve, reject) => {
       const req = request.request(`${baseUrl}/api/ai/orders`, {}, (r) => {
         r.resume();

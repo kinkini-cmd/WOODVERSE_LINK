@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run frontend tests
+        run: npm run test:frontend
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r backend/ai-service/requirements.txt
+
+      # NOTE: Integration tests below require a PostgreSQL database service.
+      # Without TEST_DATABASE_URL set, the API and AI tests will FAIL (not skip).
+      # To enable full integration tests, add a postgres service and set:
+      #   TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/woodverse_test
+      # Example postgres service config (add under services: at job level):
+      #   postgres:
+      #     image: postgres:16
+      #     env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: woodverse_test }
+      #     options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+      #     ports: ["5432:5432"]
+
+      - name: Run API tests (requires TEST_DATABASE_URL for integration assertions)
+        run: npm run test:api
+        env:
+          JWT_SECRET: test-ci-secret
+          # Uncomment and set for full integration tests:
+          # TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/woodverse_test
+
+      - name: Run AI service tests (requires TEST_DATABASE_URL for integration assertions)
+        run: npm run test:ai
+        env:
+          TEST_SERVICE_KEY: test-service-key
+          # Uncomment and set for full integration tests:
+          # TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/woodverse_test

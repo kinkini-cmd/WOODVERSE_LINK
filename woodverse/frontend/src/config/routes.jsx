@@ -148,5 +148,5 @@ const routePatterns = [
 export function resolvePage(path) {
   if (routeMap[path]) return routeMap[path];
   const pattern = routePatterns.find(([expression]) => expression.test(path));
-  return pattern ? pattern[1] : "home";
+  return pattern ? pattern[1] : "notFound";
 }

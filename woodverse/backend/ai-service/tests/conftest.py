@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# Run with: TEST_DATABASE_URL=<your-postgres-url> pytest tests/
 import os
 import pathlib
 import sys
@@ -60,7 +61,7 @@ ORDER_BELONGS_TO_B = "77777777-7777-4777-8777-777777777777"
 def seeded(has_database):
     """Insert a small deterministic fixture and return the ids tests need."""
     if not has_database:
-        pytest.skip("TEST_DATABASE_URL is not set")
+        pytest.fail("TEST_DATABASE_URL must be set to run integration tests. Set TEST_DATABASE_URL=<url> and re-run.")
 
     import psycopg
 

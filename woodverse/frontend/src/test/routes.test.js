@@ -36,20 +36,20 @@ describe("route resolution", () => {
   it.each([...storefrontLinks, ...supplierLinks, ...vendorLinks, ...adminLinks, ...workspaceLinks])(
     "resolves %s to a registered page",
     (href) => {
-      // An unregistered path silently falls back to the storefront home page, which is
-      // how the supplier sidebar links used to dead end.
-      expect(resolvePage(href)).not.toBe("home");
+      // An unregistered path falls back to the 404 page, so a known path must not
+      // resolve to 'notFound'.
+      expect(resolvePage(href)).not.toBe("notFound");
     }
   );
 
-  it("falls back to home for an unknown path", () => {
-    expect(resolvePage("/not-a-real-page")).toBe("home");
+  it("falls back to notFound for an unknown path", () => {
+    expect(resolvePage("/not-a-real-page")).toBe("notFound");
   });
 
   it("does not let a lookalike path match a portal section", () => {
-    expect(resolvePage("/admin/../shop")).toBe("home");
-    expect(resolvePage("/vendor-dashboard-extra")).toBe("home");
-    expect(resolvePage("/supplier/shipments/new/extra")).toBe("home");
+    expect(resolvePage("/admin/../shop")).toBe("notFound");
+    expect(resolvePage("/vendor-dashboard-extra")).toBe("notFound");
+    expect(resolvePage("/supplier/shipments/new/extra")).toBe("notFound");
   });
 
   it("routes the purchase order URL with and without an id", () => {

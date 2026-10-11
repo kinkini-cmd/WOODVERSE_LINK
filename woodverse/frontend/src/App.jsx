@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { Header } from "./components/Header";
 import { ChatLauncher } from "./components/LayoutParts";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { products as fallbackProducts } from "./data/catalog";
 import {
   AdminDashboardPage,
@@ -49,6 +50,7 @@ import {
   ProfilePage,
   SellerPage,
 } from "./pages/customer/index";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname.replace(/\/$/, "") || "/");
@@ -189,47 +191,50 @@ export default function App() {
       {isBlocked ? (
         <RouteLoading standalone={isStandalonePage} />
       ) : (
-      <Suspense fallback={<RouteLoading standalone={isStandalonePage} />}>
-        {page === "home" && <HomePage addToCart={(item) => addToCart(item, setCart)} />}
-        {page === "features" && <FeaturesPage />}
-        {page === "shop" && <CatalogPage title="Explore All WoodVerse Collections" subtitle="Browse furniture, wooden gifts, and timber products from verified Sri Lankan vendors." items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
-        {page === "furniture" && <CategoryPage type="furniture" items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
-        {page === "gifts" && <CategoryPage type="gift" items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
-        {page === "productDetails" && <ProductDetailsPage product={selectedProduct} catalogItems={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
-        {page === "cart" && <CartPage cart={cart} setCart={setCart} />}
-        {page === "delivery" && <DeliveryPage cart={cart} />}
-        {page === "payment" && <PaymentPage cart={cart} setCart={setCart} catalogItems={catalogProducts} />}
-        {page === "chatbot" && <ChatbotPage />}
-        {page === "seller" && <SellerPage />}
-        {page === "vendorDashboard" && <VendorDashboardPage />}
-        {page === "vendorProducts" && <VendorProductsPage />}
-        {page === "vendorCustomerOrders" && <VendorCustomerOrdersPage />}
-        {page === "vendorQuotations" && <VendorQuotationsPage />}
-        {page === "vendorProduction" && <VendorProductionTrackingPage />}
-        {page === "vendorSuppliers" && <VendorSuppliersPage />}
-        {page === "vendorPurchaseOrders" && <VendorPurchaseOrdersPage />}
-        {page === "vendorInventory" && <VendorInventoryPage />}
-        {page === "vendorWarehouses" && <VendorWarehousesPage />}
-        {page === "vendorShipments" && <VendorShipmentsPage />}
-        {page === "vendorProfile" && <VendorProfilePage />}
-        {page === "vendorSettings" && <VendorSettingsPage />}
-        {page === "vendorHelp" && <VendorHelpCenterPage />}
-        {page === "supplierDashboard" && <SupplierDashboardPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierPurchaseOrder" && <SupplierPurchaseOrderPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierMaterials" && <SupplierMaterialsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierShipments" && <SupplierShipmentsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierNewShipment" && <SupplierNewShipmentPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierVendors" && <SupplierVendorsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierNotifications" && <SupplierNotificationsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierProfile" && <SupplierProfilePage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierApps" && <SupplierAppsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierSupport" && <SupplierSupportPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "supplierSettings" && <SupplierSettingsPage theme={theme} onToggleTheme={toggleTheme} />}
-        {page === "adminDashboard" && <AdminDashboardPage />}
-        {page === "profile" && <ProfilePage isLoggedIn={isLoggedIn} role={session?.role} onLogout={handleLogout} />}
-        {page === "login" && <LoginPage onAuthSuccess={handleAuthSuccess} />}
-        {page === "forgotPassword" && <ForgotPasswordPage />}
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<RouteLoading standalone={isStandalonePage} />}>
+          {page === "home" && <HomePage addToCart={(item) => addToCart(item, setCart)} />}
+          {page === "features" && <FeaturesPage />}
+          {page === "shop" && <CatalogPage title="Explore All WoodVerse Collections" subtitle="Browse furniture, wooden gifts, and timber products from verified Sri Lankan vendors." items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
+          {page === "furniture" && <CategoryPage type="furniture" items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
+          {page === "gifts" && <CategoryPage type="gift" items={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
+          {page === "productDetails" && <ProductDetailsPage product={selectedProduct} catalogItems={catalogProducts} addToCart={(item) => addToCart(item, setCart)} />}
+          {page === "cart" && <CartPage cart={cart} setCart={setCart} />}
+          {page === "delivery" && <DeliveryPage cart={cart} />}
+          {page === "payment" && <PaymentPage cart={cart} setCart={setCart} catalogItems={catalogProducts} />}
+          {page === "chatbot" && <ChatbotPage />}
+          {page === "seller" && <SellerPage />}
+          {page === "vendorDashboard" && <VendorDashboardPage />}
+          {page === "vendorProducts" && <VendorProductsPage />}
+          {page === "vendorCustomerOrders" && <VendorCustomerOrdersPage />}
+          {page === "vendorQuotations" && <VendorQuotationsPage />}
+          {page === "vendorProduction" && <VendorProductionTrackingPage />}
+          {page === "vendorSuppliers" && <VendorSuppliersPage />}
+          {page === "vendorPurchaseOrders" && <VendorPurchaseOrdersPage />}
+          {page === "vendorInventory" && <VendorInventoryPage />}
+          {page === "vendorWarehouses" && <VendorWarehousesPage />}
+          {page === "vendorShipments" && <VendorShipmentsPage />}
+          {page === "vendorProfile" && <VendorProfilePage />}
+          {page === "vendorSettings" && <VendorSettingsPage />}
+          {page === "vendorHelp" && <VendorHelpCenterPage />}
+          {page === "supplierDashboard" && <SupplierDashboardPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierPurchaseOrder" && <SupplierPurchaseOrderPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierMaterials" && <SupplierMaterialsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierShipments" && <SupplierShipmentsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierNewShipment" && <SupplierNewShipmentPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierVendors" && <SupplierVendorsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierNotifications" && <SupplierNotificationsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierProfile" && <SupplierProfilePage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierApps" && <SupplierAppsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierSupport" && <SupplierSupportPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "supplierSettings" && <SupplierSettingsPage theme={theme} onToggleTheme={toggleTheme} />}
+          {page === "adminDashboard" && <AdminDashboardPage />}
+          {page === "profile" && <ProfilePage isLoggedIn={isLoggedIn} role={session?.role} onLogout={handleLogout} />}
+          {page === "login" && <LoginPage onAuthSuccess={handleAuthSuccess} />}
+          {page === "forgotPassword" && <ForgotPasswordPage />}
+          {page === "notFound" && <NotFoundPage />}
+        </Suspense>
+      </ErrorBoundary>
       )}
       {page !== "chatbot" && !isAuthPage && !isStandalonePage && !isBlocked && <ChatLauncher />}
     </div>
